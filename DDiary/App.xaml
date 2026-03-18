@@ -1,0 +1,29 @@
+﻿<Application x:Class="DDiary.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:DDiary"
+             xmlns:conv="clr-namespace:DDiary.Converters"
+             xmlns:helpers="clr-namespace:DDiary.Helpers">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/LightTheme.xaml"/>
+                <ResourceDictionary Source="Themes/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Global Converters -->
+            <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+            <conv:InverseBoolToVisibilityConverter x:Key="InvBoolVis"/>
+            <conv:HexColorToBrushConverter x:Key="HexToBrush"/>
+            <conv:NullToVisibilityConverter x:Key="NullVis"/>
+            <conv:DoubleToStringConverter x:Key="DblStr"/>
+            <conv:MealTypeToLabelConverter x:Key="MealLabel"/>
+            <conv:BoolToWidthConverter x:Key="BoolWidth"/>
+            <conv:InverseBoolConverter x:Key="InvBool"/>
+            <conv:StringToVisibilityConverter x:Key="StrVis"/>
+            <conv:TodayToBrushConverter x:Key="TodayBrush"/>
+            <helpers:BoolToFontWeightConverter x:Key="BoolToWeight"/>
+            <helpers:NullToBoolConverter x:Key="NullToBool"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

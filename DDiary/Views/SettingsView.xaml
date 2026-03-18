@@ -1,0 +1,178 @@
+<UserControl x:Class="DDiary.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:DDiary.ViewModels"
+             mc:Ignorable="d"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="24">
+        <StackPanel MaxWidth="700" HorizontalAlignment="Left">
+
+            <TextBlock Text="⚙ Impostazioni"
+                       Style="{StaticResource SectionHeaderStyle}"
+                       FontSize="22"
+                       Margin="0,0,0,20"/>
+
+            <!-- Appearance Card -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Aspetto" Style="{StaticResource SectionHeaderStyle}"/>
+                    <Separator/>
+
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="Tema"/>
+                            <ComboBox Style="{StaticResource ModernComboBoxStyle}"
+                                      ItemsSource="{Binding Themes}"
+                                      SelectedItem="{Binding Theme}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="Stile sfondo"/>
+                            <ComboBox Style="{StaticResource ModernComboBoxStyle}"
+                                      ItemsSource="{Binding BackgroundStyles}"
+                                      SelectedItem="{Binding BackgroundStyle}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="Famiglia font"/>
+                            <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                                     Text="{Binding FontFamily, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="Dimensione font"/>
+                            <Slider Minimum="10" Maximum="22"
+                                    Value="{Binding FontSize}"
+                                    TickFrequency="1"
+                                    IsSnapToTickEnabled="True"/>
+                            <TextBlock Text="{Binding FontSize, StringFormat='{}{0:F0} pt'}"
+                                       FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Margin="0,12,0,0">
+                        <TextBlock Style="{StaticResource LabelStyle}" Text="Colore accent (es. #0078D4)"/>
+                        <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                                 Text="{Binding AccentColor, UpdateSourceTrigger=PropertyChanged}"
+                                 MaxWidth="200" HorizontalAlignment="Left"/>
+                    </StackPanel>
+
+                    <CheckBox Style="{StaticResource ModernCheckBoxStyle}"
+                              Content="Modalità compatta"
+                              IsChecked="{Binding CompactMode}"
+                              Margin="0,12,0,0"/>
+
+                    <StackPanel Margin="0,12,0,0">
+                        <TextBlock Style="{StaticResource LabelStyle}" Text="Intensità animazioni"/>
+                        <ComboBox Style="{StaticResource ModernComboBoxStyle}"
+                                  ItemsSource="{Binding AnimationIntensities}"
+                                  SelectedItem="{Binding AnimationIntensity}"
+                                  MaxWidth="200" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Reminders Card -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Promemoria" Style="{StaticResource SectionHeaderStyle}"/>
+                    <Separator/>
+
+                    <CheckBox Style="{StaticResource ModernCheckBoxStyle}"
+                              Content="Promemoria giornaliero"
+                              IsChecked="{Binding DailyReminderEnabled}"
+                              Margin="0,8,0,0"/>
+
+                    <StackPanel Margin="0,8,0,0"
+                                IsEnabled="{Binding DailyReminderEnabled}">
+                        <TextBlock Style="{StaticResource LabelStyle}" Text="Orario promemoria (HH:mm)"/>
+                        <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                                 Text="{Binding DailyReminderTime, UpdateSourceTrigger=PropertyChanged}"
+                                 MaxWidth="120" HorizontalAlignment="Left"/>
+                    </StackPanel>
+
+                    <CheckBox Style="{StaticResource ModernCheckBoxStyle}"
+                              Content="Promemoria all'avvio dell'applicazione"
+                              IsChecked="{Binding StartupReminderEnabled}"
+                              Margin="0,12,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Export Card -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Esportazione" Style="{StaticResource SectionHeaderStyle}"/>
+                    <Separator/>
+
+                    <StackPanel Margin="0,8,0,0">
+                        <TextBlock Style="{StaticResource LabelStyle}" Text="Cartella di esportazione predefinita"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     Style="{StaticResource ModernTextBoxStyle}"
+                                     Text="{Binding ExportFolder, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="True"/>
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource SecondaryButtonStyle}"
+                                    Content="Sfoglia..."
+                                    Command="{Binding BrowseFolderCommand}"
+                                    Margin="8,0,0,0"/>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Meal Time Ranges Card -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Mappatura orario pasti" Style="{StaticResource SectionHeaderStyle}"/>
+                    <Separator/>
+
+                    <DataGrid ItemsSource="{Binding MealTimeRanges}"
+                              AutoGenerateColumns="False"
+                              Margin="0,8,0,0"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              GridLinesVisibility="Horizontal"
+                              BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Pasto" Binding="{Binding MealType}" IsReadOnly="True" Width="*"/>
+                            <DataGridTextColumn Header="Inizio (HH:mm)" Binding="{Binding Start}" Width="120"/>
+                            <DataGridTextColumn Header="Fine (HH:mm)" Binding="{Binding End}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- Save / Reset buttons -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
+                <Button Style="{StaticResource PrimaryButtonStyle}"
+                        Content="💾 Salva impostazioni"
+                        Command="{Binding SaveCommand}"
+                        Margin="0,0,8,0"/>
+                <Button Style="{StaticResource SecondaryButtonStyle}"
+                        Content="↩ Ripristina valori predefiniti"
+                        Command="{Binding ResetCommand}"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
