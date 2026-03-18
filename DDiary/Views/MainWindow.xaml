@@ -1,0 +1,224 @@
+<Window x:Class="DDiary.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:DDiary.ViewModels"
+        xmlns:views="clr-namespace:DDiary.Views"
+        mc:Ignorable="d"
+        Title="DDiary"
+        Width="1280" Height="800"
+        MinWidth="900" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}"
+        FontFamily="Segoe UI"
+        FontSize="14">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVis"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="52"/>   <!-- Top bar -->
+            <RowDefinition Height="*"/>    <!-- Content -->
+            <RowDefinition Height="28"/>   <!-- Status bar -->
+        </Grid.RowDefinitions>
+
+        <!-- ═══════════════════════════════════════════
+             TOP BAR
+        ═══════════════════════════════════════════ -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid Margin="12,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Hamburger + Logo -->
+                <Button Grid.Column="0"
+                        Style="{StaticResource NavButtonStyle}"
+                        Command="{Binding ToggleSidebarCommand}"
+                        ToolTip="Storico"
+                        Margin="0,0,8,0">
+                    <TextBlock Text="☰" FontSize="18"/>
+                </Button>
+
+                <TextBlock Grid.Column="1"
+                           Text="DDiary"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource AccentBrush}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,24,0"/>
+
+                <!-- Navigation -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Command="{Binding NavigateTodayCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📅 " FontSize="14"/>
+                            <TextBlock Text="Diario di oggi"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Command="{Binding NavigateHistoryCommand}"
+                            Margin="4,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📂 " FontSize="14"/>
+                            <TextBlock Text="Storico"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Command="{Binding ExportPdfCommand}"
+                            Margin="4,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📄 " FontSize="14"/>
+                            <TextBlock Text="Esporta PDF"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Command="{Binding ExportPngCommand}"
+                            Margin="4,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🖼 " FontSize="14"/>
+                            <TextBlock Text="Esporta PNG"/>
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+
+                <!-- Profile + Settings -->
+                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Command="{Binding NavigateSettingsCommand}"
+                            Margin="4,0"
+                            ToolTip="Impostazioni">
+                        <TextBlock Text="⚙" FontSize="16"/>
+                    </Button>
+
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Command="{Binding NavigateProfileCommand}"
+                            ToolTip="Profilo utente">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="👤 " FontSize="14"/>
+                            <TextBlock Text="{Binding ActiveProfileName}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ═══════════════════════════════════════════
+             MAIN CONTENT AREA
+        ═══════════════════════════════════════════ -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <!-- Collapsible sidebar -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Main content -->
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ── Sidebar ── -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource SidebarBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,0,1,0"
+                    Width="{Binding IsSidebarOpen, Converter={StaticResource BoolWidth}}"
+                    ClipToBounds="True">
+                <views:HistorySidebarView DataContext="{Binding HistoryVM}"/>
+            </Border>
+
+            <!-- ── Main Pages ── -->
+            <Grid Grid.Column="1">
+
+                <!-- Diary page -->
+                <views:DiaryView x:Name="DiaryViewControl"
+                                 DataContext="{Binding DiaryVM}"
+                                 Visibility="{Binding ShowDiary, Converter={StaticResource BoolVis}}"/>
+
+                <!-- History page -->
+                <views:HistoryView DataContext="{Binding HistoryVM}"
+                                   Visibility="{Binding ShowHistory, Converter={StaticResource BoolVis}}"/>
+
+                <!-- Settings page -->
+                <views:SettingsView DataContext="{Binding SettingsVM}"
+                                    Visibility="{Binding ShowSettings, Converter={StaticResource BoolVis}}"/>
+
+                <!-- Profile page -->
+                <views:ProfileView DataContext="{Binding ProfileVM}"
+                                   Visibility="{Binding ShowProfile, Converter={StaticResource BoolVis}}"/>
+            </Grid>
+        </Grid>
+
+        <!-- ═══════════════════════════════════════════
+             STATUS BAR
+        ═══════════════════════════════════════════ -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,1,0,0">
+            <Grid Margin="12,0">
+                <TextBlock Text="{Binding StatusMessage}"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="12"/>
+
+                <ProgressBar HorizontalAlignment="Right"
+                             VerticalAlignment="Center"
+                             Width="100" Height="4"
+                             IsIndeterminate="True"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BoolVis}}"/>
+            </Grid>
+        </Border>
+
+        <!-- ═══════════════════════════════════════════
+             FLOATING ACTION BUTTON
+        ═══════════════════════════════════════════ -->
+        <Button Grid.Row="1"
+                Style="{StaticResource FabStyle}"
+                Command="{Binding OpenInsertPanelCommand}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0,0,24,24"
+                ToolTip="Aggiungi alimento"
+                Visibility="{Binding ShowDiary, Converter={StaticResource BoolVis}}">
+            <TextBlock Text="+" FontSize="26" FontWeight="Light" VerticalAlignment="Center"/>
+        </Button>
+
+        <!-- ═══════════════════════════════════════════
+             INSERT PANEL OVERLAY
+        ═══════════════════════════════════════════ -->
+        <Grid Grid.Row="0" Grid.RowSpan="3"
+              Visibility="{Binding IsInsertPanelOpen, Converter={StaticResource BoolVis}}">
+
+            <!-- Dim background -->
+            <Border Background="{DynamicResource OverlayBrush}"
+                    MouseDown="Overlay_MouseDown"/>
+
+            <!-- Floating card -->
+            <Border MaxWidth="480"
+                    MaxHeight="640"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Border.Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource CardStyle}">
+                        <Setter Property="Padding" Value="28"/>
+                    </Style>
+                </Border.Style>
+                <views:FoodInsertView DataContext="{Binding FoodInsertVM}"/>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Window>
