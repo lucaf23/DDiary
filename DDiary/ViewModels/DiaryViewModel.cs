@@ -250,7 +250,7 @@ namespace DDiary.ViewModels
                     }
                 }
 
-                MealSections.OrderBy(s => s.MealType).ToList();
+                // Sections are pre-ordered when loaded from the database
             }
             finally
             {

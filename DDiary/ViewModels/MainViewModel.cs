@@ -89,8 +89,6 @@ namespace DDiary.ViewModels
         public ICommand ExportPngCommand { get; }
         public ICommand ExportPdfCommand { get; }
 
-        public event Action? NavigatedToToday;
-
         /// <summary>Provider per l'elemento UI del diario (usato per l'export).</summary>
         public Func<System.Windows.FrameworkElement?>? DiaryElementProvider { get; set; }
 

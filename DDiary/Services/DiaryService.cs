@@ -73,7 +73,7 @@ namespace DDiary.Services
             var diary = await _diaryRepo.GetByIdAsync(diaryId)
                         ?? throw new InvalidOperationException("Diario non trovato.");
 
-            MealType targetMeal = mealTypeOverride ?? GetMealTypeForTime(entry.MealTime, AppSettings.GetDefaultMealTimeRanges().Select(r => new MealTimeRangeSetting { MealType = r.MealType, Start = r.Start, End = r.End }));
+            MealType targetMeal = mealTypeOverride ?? GetMealTypeForTime(entry.MealTime, AppSettings.GetDefaultMealTimeRanges());
 
             var section = diary.MealSections.FirstOrDefault(s => s.MealType == targetMeal);
             if (section == null)
