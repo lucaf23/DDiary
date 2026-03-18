@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DDiary.Commands;
+using DDiary.Helpers;
 using DDiary.Models;
 using DDiary.Services;
 
@@ -132,6 +133,7 @@ namespace DDiary.ViewModels
             FoodInsertVM.RequestSaveAndAdd += () => { /* keep panel open, reset form */ };
             ProfileVM.ProfileActivated += async p => await OnProfileActivated(p);
             SettingsVM.SettingsSaved += OnSettingsSaved;
+            SettingsVM.RequestClose += OnSettingsCloseRequested;
         }
 
         public async Task InitializeAsync()
@@ -171,8 +173,9 @@ namespace DDiary.ViewModels
                 SetupNotifications();
 
                 // Navigate to default page
-                CurrentPage = _settingsService.Settings.DefaultStartupPage;
-
+                //CurrentPage = _settingsService.Settings.DefaultStartupPage;
+                CurrentPage = "Today";
+                UpdatePageVisibility();
                 // Wire insert command save
                 FoodInsertVM.OnSave = async (entry, mealType) =>
                 {
@@ -222,8 +225,15 @@ namespace DDiary.ViewModels
 
         private void OnSettingsSaved()
         {
+            ThemeManager.ApplyTheme(_settingsService.Settings.Theme);
             SetupNotifications();
             StatusMessage = "Impostazioni salvate.";
+            CurrentPage = "Today";
+        }
+
+        private void OnSettingsCloseRequested()
+        {
+            CurrentPage = "Today";
         }
 
         private void SetupNotifications()

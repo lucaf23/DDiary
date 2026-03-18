@@ -150,9 +150,9 @@
                                            FontWeight="{Binding IsToday, Converter={StaticResource BoolToWeight}}"
                                            Foreground="{DynamicResource TextPrimaryBrush}"/>
                                 <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
-                                    <Run Text="{Binding FoodEntriesCount}"/>
+                                    <Run Text="{Binding FoodEntriesCount, Mode=OneWay}"/>
                                     <Run Text=" alimenti · CHO:"/>
-                                    <Run Text="{Binding TotalDayCho, StringFormat='{}{0:F0}'}"/>
+                                    <Run Text="{Binding TotalDayCho, Mode=OneWay, StringFormat='{}{0:F0}'}"/>
                                     <Run Text="g"/>
                                 </TextBlock>
                             </StackPanel>

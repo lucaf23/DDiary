@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DDiary.Commands;
+using DDiary.Helpers;
 using DDiary.Models;
 using DDiary.Services;
 
@@ -101,6 +102,11 @@ namespace DDiary.ViewModels
         {
             SelectedProfile = profile;
             _settingsService.Settings.ActiveProfileId = profile.Id;
+            if (!string.IsNullOrWhiteSpace(profile.PreferredTheme))
+            {
+                _settingsService.Settings.Theme = profile.PreferredTheme;
+                ThemeManager.ApplyTheme(profile.PreferredTheme);
+            }
             _ = _settingsService.SaveAsync();
             ProfileActivated?.Invoke(profile);
         }
@@ -109,6 +115,15 @@ namespace DDiary.ViewModels
         {
             if (SelectedProfile == null) return;
             await _profileService.UpdateProfileAsync(SelectedProfile);
+
+            if (!string.IsNullOrWhiteSpace(SelectedProfile.PreferredTheme))
+            {
+                _settingsService.Settings.Theme = SelectedProfile.PreferredTheme;
+                await _settingsService.SaveAsync();
+                ThemeManager.ApplyTheme(SelectedProfile.PreferredTheme);
+            }
         }
+
+        public List<string> ThemeOptions { get; } = new() { "Light", "Dark", "System" };
     }
 }

@@ -110,8 +110,10 @@ namespace DDiary.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand ResetCommand { get; }
         public ICommand BrowseFolderCommand { get; }
+        public ICommand CloseCommand { get; }
 
         public event Action? SettingsSaved;
+        public event Action? RequestClose;
 
         public SettingsViewModel(ISettingsService settingsService)
         {
@@ -119,6 +121,7 @@ namespace DDiary.ViewModels
             SaveCommand = new RelayCommand(async () => await SaveAsync());
             ResetCommand = new RelayCommand(async () => await ResetAsync());
             BrowseFolderCommand = new RelayCommand(BrowseFolder);
+            CloseCommand = new RelayCommand(Close);
 
             LoadFromSettings();
         }
@@ -163,6 +166,7 @@ namespace DDiary.ViewModels
 
             await _settingsService.SaveAsync();
             SettingsSaved?.Invoke();
+            RequestClose?.Invoke();
         }
 
         private async Task ResetAsync()
@@ -181,6 +185,11 @@ namespace DDiary.ViewModels
             };
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 ExportFolder = dialog.SelectedPath;
+        }
+
+        private void Close()
+        {
+            RequestClose?.Invoke();
         }
     }
 }

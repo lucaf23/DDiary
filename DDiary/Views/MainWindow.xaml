@@ -145,19 +145,27 @@
                 <!-- Diary page -->
                 <views:DiaryView x:Name="DiaryViewControl"
                                  DataContext="{Binding DiaryVM}"
-                                 Visibility="{Binding ShowDiary, Converter={StaticResource BoolVis}}"/>
+                                 Visibility="{Binding DataContext.ShowDiary,
+                                                      RelativeSource={RelativeSource AncestorType=Window},
+                                                      Converter={StaticResource BoolVis}}"/>
 
                 <!-- History page -->
                 <views:HistoryView DataContext="{Binding HistoryVM}"
-                                   Visibility="{Binding ShowHistory, Converter={StaticResource BoolVis}}"/>
+                                   Visibility="{Binding DataContext.ShowHistory,
+                                                    RelativeSource={RelativeSource AncestorType=Window},
+                                                    Converter={StaticResource BoolVis}}"/>
 
                 <!-- Settings page -->
                 <views:SettingsView DataContext="{Binding SettingsVM}"
-                                    Visibility="{Binding ShowSettings, Converter={StaticResource BoolVis}}"/>
+                                    Visibility="{Binding DataContext.ShowSettings,
+                                                     RelativeSource={RelativeSource AncestorType=Window},
+                                                     Converter={StaticResource BoolVis}}"/>
 
                 <!-- Profile page -->
                 <views:ProfileView DataContext="{Binding ProfileVM}"
-                                   Visibility="{Binding ShowProfile, Converter={StaticResource BoolVis}}"/>
+                                   Visibility="{Binding DataContext.ShowProfile,
+                                                    RelativeSource={RelativeSource AncestorType=Window},
+                                                    Converter={StaticResource BoolVis}}"/>
             </Grid>
         </Grid>
 

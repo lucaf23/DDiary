@@ -162,7 +162,7 @@
                 </StackPanel>
             </Border>
 
-            <!-- Save / Reset buttons -->
+            <!-- Save / Reset / Close buttons -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,32">
                 <Button Style="{StaticResource PrimaryButtonStyle}"
                         Content="💾 Salva impostazioni"
@@ -170,7 +170,11 @@
                         Margin="0,0,8,0"/>
                 <Button Style="{StaticResource SecondaryButtonStyle}"
                         Content="↩ Ripristina valori predefiniti"
-                        Command="{Binding ResetCommand}"/>
+                        Command="{Binding ResetCommand}"
+                        Margin="0,0,8,0"/>
+                <Button Style="{StaticResource SecondaryButtonStyle}"
+                        Content="✖ Chiudi"
+                        Command="{Binding CloseCommand}"/>
             </StackPanel>
 
         </StackPanel>

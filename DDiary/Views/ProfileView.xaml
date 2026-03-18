@@ -119,8 +119,9 @@
 
                             <StackPanel Grid.Column="1" Margin="6,0,0,0">
                                 <TextBlock Style="{StaticResource LabelStyle}" Text="Tema preferito"/>
-                                <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                         Text="{Binding SelectedProfile.PreferredTheme, UpdateSourceTrigger=PropertyChanged}"/>
+                                <ComboBox Style="{StaticResource ModernComboBoxStyle}"
+                                          ItemsSource="{Binding ThemeOptions}"
+                                          SelectedItem="{Binding SelectedProfile.PreferredTheme, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
                         </Grid>
 

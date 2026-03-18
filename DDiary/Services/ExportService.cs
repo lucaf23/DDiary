@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DDiary.Models;
+using PdfSharp.Fonts;
 
 namespace DDiary.Services
 {
@@ -21,6 +22,13 @@ namespace DDiary.Services
 
     public class ExportService : IExportService
     {
+        static ExportService()
+        {
+            // PdfSharp 6.x (Core build) non risolve automaticamente i font di sistema.
+            // Inizializzazione globale una sola volta, prima di creare qualsiasi XFont.
+            GlobalFontSettings.UseWindowsFontsUnderWindows = true;
+        }
+
         public async Task<string> ExportAsPngAsync(FrameworkElement element, DailyDiary diary, UserProfile profile, string? folder = null)
         {
             var exportFolder = GetExportFolder(folder, profile);
