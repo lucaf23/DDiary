@@ -89,6 +89,16 @@ namespace DDiary.ViewModels
         public ICommand CloseInsertPanelCommand { get; }
         public ICommand ExportPngCommand { get; }
         public ICommand ExportPdfCommand { get; }
+        public ICommand ToggleFullscreenCommand { get; }
+
+        // --- Fullscreen state ---
+        private bool _isFullscreen;
+        public bool IsFullscreen
+        {
+            get => _isFullscreen;
+            set { SetProperty(ref _isFullscreen, value); OnPropertyChanged(nameof(FullscreenLabel)); }
+        }
+        public string FullscreenLabel => _isFullscreen ? "🗗 Ripristina" : "⛶ Schermo intero";
 
         /// <summary>Provider per l'elemento UI del diario (usato per l'export).</summary>
         public Func<System.Windows.FrameworkElement?>? DiaryElementProvider { get; set; }
@@ -126,6 +136,7 @@ namespace DDiary.ViewModels
             CloseInsertPanelCommand = new RelayCommand(CloseInsertPanel);
             ExportPngCommand = new RelayCommand(async () => await ExportPngAsync());
             ExportPdfCommand = new RelayCommand(async () => await ExportPdfAsync());
+            ToggleFullscreenCommand = new RelayCommand(ToggleFullscreen);
 
             // Wire events
             HistoryVM.DiarySelected += date => _ = OpenDiaryByDateAsync(date);
@@ -234,6 +245,21 @@ namespace DDiary.ViewModels
         private void OnSettingsCloseRequested()
         {
             CurrentPage = "Today";
+        }
+
+        private void ToggleFullscreen()
+        {
+            var w = System.Windows.Application.Current.MainWindow;
+            if (w.WindowState == WindowState.Maximized && IsFullscreen)
+            {
+                w.WindowState = WindowState.Normal;
+                IsFullscreen = false;
+            }
+            else
+            {
+                w.WindowState = WindowState.Maximized;
+                IsFullscreen = true;
+            }
         }
 
         private void SetupNotifications()

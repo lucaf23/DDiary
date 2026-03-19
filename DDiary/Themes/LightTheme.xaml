@@ -7,7 +7,7 @@
     <Color x:Key="SurfaceColor">#FFFFFF</Color>
     <Color x:Key="BorderColor">#E0E0E0</Color>
     <Color x:Key="TextPrimaryColor">#1A1A1A</Color>
-    <Color x:Key="TextSecondaryColor">#6B7280</Color>
+    <Color x:Key="TextSecondaryColor">#555D6B</Color>
     <Color x:Key="AccentColor">#0078D4</Color>
     <Color x:Key="AccentHoverColor">#106EBE</Color>
     <Color x:Key="StripeColor">#EAEAEA</Color>
@@ -30,5 +30,6 @@
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>
     <SolidColorBrush x:Key="OverlayBrush" Color="{StaticResource OverlayColor}"/>
+    <SolidColorBrush x:Key="EmptySectionHeaderBrush" Color="#F7F7F7"/>
 
 </ResourceDictionary>
