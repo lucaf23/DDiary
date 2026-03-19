@@ -259,6 +259,7 @@ namespace DDiary.ViewModels
             {
                 w.WindowState = WindowState.Maximized;
                 IsFullscreen = true;
+                IsSidebarOpen = false;
             }
         }
 

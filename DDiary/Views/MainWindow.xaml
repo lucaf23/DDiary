@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:DDiary.ViewModels"
         xmlns:views="clr-namespace:DDiary.Views"
+        xmlns:conv="clr-namespace:DDiary.Converters"
         mc:Ignorable="d"
         Title="DDiary"
         Width="1280" Height="800"
@@ -16,13 +17,14 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVis"/>
+        <conv:InverseBoolToVisibilityConverter x:Key="InvBoolVis"/>
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="52"/>   <!-- Top bar -->
+            <RowDefinition Height="Auto"/>  <!-- Top bar -->
             <RowDefinition Height="*"/>    <!-- Content -->
-            <RowDefinition Height="28"/>   <!-- Status bar -->
+            <RowDefinition Height="Auto"/> <!-- Status bar -->
         </Grid.RowDefinitions>
 
         <!-- ═══════════════════════════════════════════
@@ -31,7 +33,9 @@
         <Border Grid.Row="0"
                 Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="0,0,0,1">
+                BorderThickness="0,0,0,1"
+                MinHeight="52"
+                Visibility="{Binding IsFullscreen, Converter={StaticResource InvBoolVis}}">
             <Grid Margin="12,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -131,7 +135,8 @@
 
             <!-- ── Sidebar ── -->
             <Border Grid.Column="0"
-                    ClipToBounds="True">
+                    ClipToBounds="True"
+                    Visibility="{Binding IsFullscreen, Converter={StaticResource InvBoolVis}}">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Width" Value="0"/>
@@ -207,7 +212,9 @@
         <Border Grid.Row="2"
                 Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="0,1,0,0">
+                BorderThickness="0,1,0,0"
+                MinHeight="28"
+                Visibility="{Binding IsFullscreen, Converter={StaticResource InvBoolVis}}">
             <Grid Margin="12,0">
                 <TextBlock Text="{Binding StatusMessage}"
                            VerticalAlignment="Center"
