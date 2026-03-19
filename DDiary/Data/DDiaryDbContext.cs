@@ -52,6 +52,11 @@ namespace DDiary.Data
                     .HasForeignKey(x => x.DailyDiaryId)
                     .OnDelete(DeleteBehavior.Cascade);
                 e.Property(x => x.MealType).HasConversion<string>();
+                e.Property(x => x.MealTime)
+                    .HasConversion(
+                        v => v.ToString(@"HH\:mm"),
+                        v => TimeSpan.Parse(v))
+                    .HasDefaultValueSql("'00:00'");
             });
 
             // FoodEntry

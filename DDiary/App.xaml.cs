@@ -99,6 +99,14 @@ namespace DDiary
             using var scope = _serviceProvider!.CreateScope();
             var ctx = scope.ServiceProvider.GetRequiredService<DDiaryDbContext>();
             await ctx.Database.EnsureCreatedAsync();
+
+            // Handle schema updates for existing databases (add new columns gracefully)
+            try
+            {
+                await ctx.Database.ExecuteSqlRawAsync(
+                    "ALTER TABLE MealSections ADD COLUMN MealTime TEXT NOT NULL DEFAULT '00:00'");
+            }
+            catch { /* Column already exists — safe to ignore */ }
         }
     }
 }

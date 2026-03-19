@@ -245,6 +245,7 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
@@ -266,7 +267,51 @@
                                                      Text="{Binding InsulinCarbRatio, StringFormat='{}{0:F1}', UpdateSourceTrigger=PropertyChanged}"/>
                                         </StackPanel>
 
-                                        <StackPanel Grid.Column="3" Margin="4,0,0,0">
+                                        <!-- Ora pasto spinner -->
+                                        <StackPanel Grid.Column="3" Margin="4,0">
+                                            <TextBlock Style="{StaticResource LabelStyle}" Text="Ora pasto"/>
+                                            <Border Style="{StaticResource CardStyle}" Padding="6,4" Margin="0,0,0,0">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <StackPanel>
+                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
+                                                                Command="{Binding IncrementHourCommand}"
+                                                                Content="▲"/>
+                                                        <TextBlock FontSize="18" FontWeight="SemiBold"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   MinWidth="28"
+                                                                   Margin="0,3"
+                                                                   Text="{Binding MealHourDisplay}"/>
+                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
+                                                                Command="{Binding DecrementHourCommand}"
+                                                                Content="▼"/>
+                                                    </StackPanel>
+                                                    <TextBlock Text=":"
+                                                               FontSize="18" FontWeight="Bold"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               VerticalAlignment="Center"
+                                                               Margin="3,0"/>
+                                                    <StackPanel>
+                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
+                                                                Command="{Binding IncrementMinuteCommand}"
+                                                                Content="▲"/>
+                                                        <TextBlock FontSize="18" FontWeight="SemiBold"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   MinWidth="28"
+                                                                   Margin="0,3"
+                                                                   Text="{Binding MealMinuteDisplay}"/>
+                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
+                                                                Command="{Binding DecrementMinuteCommand}"
+                                                                Content="▼"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="4" Margin="4,0,0,0">
                                             <TextBlock Style="{StaticResource LabelStyle}" Text="Note pasto"/>
                                             <TextBox Style="{StaticResource ModernTextBoxStyle}"
                                                      Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"/>
@@ -283,13 +328,11 @@
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="80"/>
                                                 <ColumnDefinition Width="36"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Style="{StaticResource TableHeaderLabelStyle}" Text="Alimento"/>
                                             <TextBlock Grid.Column="1" Style="{StaticResource TableHeaderLabelStyle}" Text="Porzione (g)" HorizontalAlignment="Right"/>
                                             <TextBlock Grid.Column="2" Style="{StaticResource TableHeaderLabelStyle}" Text="CHO (g)" HorizontalAlignment="Right"/>
-                                            <TextBlock Grid.Column="3" Style="{StaticResource TableHeaderLabelStyle}" Text="Ora" HorizontalAlignment="Center"/>
                                         </Grid>
                                     </Border>
 
@@ -305,7 +348,6 @@
                                                             <ColumnDefinition Width="2*"/>
                                                             <ColumnDefinition Width="*"/>
                                                             <ColumnDefinition Width="*"/>
-                                                            <ColumnDefinition Width="80"/>
                                                             <ColumnDefinition Width="36"/>
                                                         </Grid.ColumnDefinitions>
 
@@ -332,15 +374,8 @@
                                                                  HorizontalContentAlignment="Right"
                                                                  VerticalAlignment="Center"/>
 
-                                                        <TextBlock Grid.Column="3"
-                                                                   Text="{Binding MealTimeDisplay}"
-                                                                   HorizontalAlignment="Center"
-                                                                   VerticalAlignment="Center"
-                                                                   Foreground="{DynamicResource TextSecondaryBrush}"
-                                                                   FontSize="13"/>
-
                                                         <!-- Delete button -->
-                                                        <Button Grid.Column="4"
+                                                        <Button Grid.Column="3"
                                                                 Width="28" Height="28"
                                                                 Background="Transparent"
                                                                 BorderThickness="0"
@@ -502,6 +537,7 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
@@ -535,8 +571,54 @@
                                                      Padding="4,3"/>
                                         </StackPanel>
 
+                                        <!-- Ora pasto spinner -->
+                                        <StackPanel Grid.Column="3" Margin="4,0">
+                                            <TextBlock Text="Ora pasto"
+                                                       Style="{StaticResource TableHeaderLabelStyle}"
+                                                       Margin="0,0,0,2"/>
+                                            <Border Style="{StaticResource CardStyle}" Padding="6,3">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <StackPanel>
+                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
+                                                                Command="{Binding IncrementHourCommand}"
+                                                                Content="▲"/>
+                                                        <TextBlock FontSize="16" FontWeight="SemiBold"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   MinWidth="26"
+                                                                   Margin="0,2"
+                                                                   Text="{Binding MealHourDisplay}"/>
+                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
+                                                                Command="{Binding DecrementHourCommand}"
+                                                                Content="▼"/>
+                                                    </StackPanel>
+                                                    <TextBlock Text=":"
+                                                               FontSize="16" FontWeight="Bold"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               VerticalAlignment="Center"
+                                                               Margin="2,0"/>
+                                                    <StackPanel>
+                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
+                                                                Command="{Binding IncrementMinuteCommand}"
+                                                                Content="▲"/>
+                                                        <TextBlock FontSize="16" FontWeight="SemiBold"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center"
+                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                   MinWidth="26"
+                                                                   Margin="0,2"
+                                                                   Text="{Binding MealMinuteDisplay}"/>
+                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
+                                                                Command="{Binding DecrementMinuteCommand}"
+                                                                Content="▼"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+
                                         <!-- Note pasto -->
-                                        <StackPanel Grid.Column="3" Margin="4,0,0,0">
+                                        <StackPanel Grid.Column="4" Margin="4,0,0,0">
                                             <TextBlock Text="Note pasto"
                                                        Style="{StaticResource TableHeaderLabelStyle}"
                                                        Margin="0,0,0,2"/>
@@ -557,13 +639,11 @@
                                             <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="80"/>
                                             <ColumnDefinition Width="36"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Style="{StaticResource TableHeaderLabelStyle}" Text="Alimento"/>
                                         <TextBlock Grid.Column="1" Style="{StaticResource TableHeaderLabelStyle}" Text="Porzione (g)" HorizontalAlignment="Right"/>
                                         <TextBlock Grid.Column="2" Style="{StaticResource TableHeaderLabelStyle}" Text="CHO (g)" HorizontalAlignment="Right"/>
-                                        <TextBlock Grid.Column="3" Style="{StaticResource TableHeaderLabelStyle}" Text="Ora" HorizontalAlignment="Center"/>
                                     </Grid>
                                 </Border>
 
@@ -580,7 +660,6 @@
                                                         <ColumnDefinition Width="2*"/>
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="80"/>
                                                         <ColumnDefinition Width="36"/>
                                                     </Grid.ColumnDefinitions>
 
@@ -607,15 +686,8 @@
                                                              HorizontalContentAlignment="Right"
                                                              VerticalAlignment="Center"/>
 
-                                                    <TextBlock Grid.Column="3"
-                                                               Text="{Binding MealTimeDisplay}"
-                                                               HorizontalAlignment="Center"
-                                                               VerticalAlignment="Center"
-                                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                                               FontSize="13"/>
-
                                                     <!-- Delete button -->
-                                                    <Button Grid.Column="4"
+                                                    <Button Grid.Column="3"
                                                             Width="28" Height="28"
                                                             Background="Transparent"
                                                             BorderThickness="0"

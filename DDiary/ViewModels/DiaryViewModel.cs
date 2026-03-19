@@ -92,6 +92,10 @@ namespace DDiary.ViewModels
         public bool HasFoodEntries => FoodEntries.Count > 0;
 
         public ICommand ToggleSectionCommand { get; }
+        public ICommand IncrementHourCommand { get; }
+        public ICommand DecrementHourCommand { get; }
+        public ICommand IncrementMinuteCommand { get; }
+        public ICommand DecrementMinuteCommand { get; }
 
         public ObservableCollection<FoodEntryViewModel> FoodEntries { get; } = new();
 
@@ -131,6 +135,43 @@ namespace DDiary.ViewModels
             set { SetProperty(ref _notes, value); _model.Notes = value; }
         }
 
+        // ── Meal time spinner ──
+        private int _mealHour;
+        public int MealHour
+        {
+            get => _mealHour;
+            set
+            {
+                value = ((value % 24) + 24) % 24;
+                SetProperty(ref _mealHour, value);
+                OnPropertyChanged(nameof(MealHourDisplay));
+                SyncMealTime();
+            }
+        }
+
+        private int _mealMinute;
+        public int MealMinute
+        {
+            get => _mealMinute;
+            set
+            {
+                value = ((value % 60) + 60) % 60;
+                SetProperty(ref _mealMinute, value);
+                OnPropertyChanged(nameof(MealMinuteDisplay));
+                SyncMealTime();
+            }
+        }
+
+        public string MealHourDisplay => _mealHour.ToString("D2");
+        public string MealMinuteDisplay => _mealMinute.ToString("D2");
+
+        public TimeSpan MealTime => _model.MealTime;
+
+        private void SyncMealTime()
+        {
+            _model.MealTime = new TimeSpan(_mealHour, _mealMinute, 0);
+        }
+
         public MealSection Model => _model;
 
         public MealSectionViewModel(MealSection model)
@@ -141,6 +182,8 @@ namespace DDiary.ViewModels
             _glycemiaBefore = model.GlycemiaBefore;
             _glycemiaAfter = model.GlycemiaAfter;
             _notes = model.Notes;
+            _mealHour = model.MealTime.Hours;
+            _mealMinute = model.MealTime.Minutes;
 
             foreach (var entry in model.FoodEntries.OrderBy(f => f.SortOrder))
                 FoodEntries.Add(new FoodEntryViewModel(entry));
@@ -149,6 +192,10 @@ namespace DDiary.ViewModels
             _isExpanded = FoodEntries.Count > 0;
 
             ToggleSectionCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
+            IncrementHourCommand = new RelayCommand(() => MealHour++);
+            DecrementHourCommand = new RelayCommand(() => MealHour--);
+            IncrementMinuteCommand = new RelayCommand(() => MealMinute += 5);
+            DecrementMinuteCommand = new RelayCommand(() => MealMinute -= 5);
         }
 
         /// <summary>Sum of all food entries' portion weights for this meal.</summary>
@@ -222,10 +269,16 @@ namespace DDiary.ViewModels
         public bool IsClassicMode
         {
             get => _isClassicMode;
-            set { SetProperty(ref _isClassicMode, value); OnPropertyChanged(nameof(ViewModeToggleLabel)); }
+            set
+            {
+                SetProperty(ref _isClassicMode, value);
+                OnPropertyChanged(nameof(ViewModeToggleLabel));
+                OnPropertyChanged(nameof(ViewModeIcon));
+            }
         }
 
         public string ViewModeToggleLabel => _isClassicMode ? "≡ Vista moderna" : "⊞ Tabella classica";
+        public string ViewModeIcon => _isClassicMode ? "≡" : "⊞";
 
         public ObservableCollection<MealSectionViewModel> MealSections { get; } = new();
 
@@ -342,9 +395,10 @@ namespace DDiary.ViewModels
         private async Task AddInlineFoodEntryAsync(MealType mealType)
         {
             if (_model == null) return;
+            var section = MealSections.FirstOrDefault(s => s.MealType == mealType);
             var entry = new FoodEntry
             {
-                MealTime = TimeSpan.FromHours(DateTime.Now.Hour),
+                MealTime = section?.MealTime ?? TimeSpan.FromHours(DateTime.Now.Hour),
                 FoodName = "",
                 PortionGrams = 0,
                 ChoGrams = 0,
