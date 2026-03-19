@@ -17,6 +17,40 @@ namespace DDiary.ViewModels
         private readonly IDiaryService _diaryService;
         private readonly ISettingsService _settingsService;
 
+        private bool _updatingFromMealType = false;
+
+        private static int RoundMinuteTo5(int minute) => (minute / 5) * 5;
+
+        // ── Hour / Minute as integers ──
+        private int _mealHour = DateTime.Now.Hour;
+        public int MealHour
+        {
+            get => _mealHour;
+            set
+            {
+                value = ((value % 24) + 24) % 24;
+                SetProperty(ref _mealHour, value);
+                OnPropertyChanged(nameof(MealHourDisplay));
+                SyncTimeTextFromParts();
+            }
+        }
+
+        private int _mealMinute = RoundMinuteTo5(DateTime.Now.Minute);
+        public int MealMinute
+        {
+            get => _mealMinute;
+            set
+            {
+                value = ((value % 60) + 60) % 60;
+                SetProperty(ref _mealMinute, value);
+                OnPropertyChanged(nameof(MealMinuteDisplay));
+                SyncTimeTextFromParts();
+            }
+        }
+
+        public string MealHourDisplay => _mealHour.ToString("D2");
+        public string MealMinuteDisplay => _mealMinute.ToString("D2");
+
         private string _mealTimeText = DateTime.Now.ToString("HH:mm");
         public string MealTimeText
         {
@@ -24,7 +58,19 @@ namespace DDiary.ViewModels
             set
             {
                 SetProperty(ref _mealTimeText, value);
-                UpdateAutoMealType();
+                if (!_updatingFromMealType)
+                {
+                    if (TimeSpan.TryParse(value, out var ts))
+                    {
+                        _mealHour = ts.Hours;
+                        _mealMinute = ts.Minutes;
+                        OnPropertyChanged(nameof(MealHour));
+                        OnPropertyChanged(nameof(MealMinute));
+                        OnPropertyChanged(nameof(MealHourDisplay));
+                        OnPropertyChanged(nameof(MealMinuteDisplay));
+                    }
+                    UpdateAutoMealType();
+                }
                 ValidateTime();
             }
         }
@@ -54,7 +100,11 @@ namespace DDiary.ViewModels
         public MealType SelectedMealType
         {
             get => _selectedMealType;
-            set => SetProperty(ref _selectedMealType, value);
+            set
+            {
+                if (SetProperty(ref _selectedMealType, value))
+                    SetTimeFromMealType(value);
+            }
         }
 
         private bool _manualMealOverride = false;
@@ -91,6 +141,10 @@ namespace DDiary.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand SaveAndAddCommand { get; }
         public ICommand CancelCommand { get; }
+        public ICommand IncrementHourCommand { get; }
+        public ICommand DecrementHourCommand { get; }
+        public ICommand IncrementMinuteCommand { get; }
+        public ICommand DecrementMinuteCommand { get; }
 
         public event Action? RequestClose;
         public event Action? RequestSaveAndAdd;
@@ -103,6 +157,10 @@ namespace DDiary.ViewModels
             SaveCommand = new RelayCommand(async () => await SaveAsync(), () => IsValid);
             SaveAndAddCommand = new RelayCommand(async () => await SaveAndAddAsync(), () => IsValid);
             CancelCommand = new RelayCommand(() => RequestClose?.Invoke());
+            IncrementHourCommand = new RelayCommand(() => MealHour++);
+            DecrementHourCommand = new RelayCommand(() => MealHour--);
+            IncrementMinuteCommand = new RelayCommand(() => MealMinute += 5);
+            DecrementMinuteCommand = new RelayCommand(() => MealMinute -= 5);
 
             UpdateAutoMealType();
         }
@@ -139,13 +197,50 @@ namespace DDiary.ViewModels
                 await OnSave(entry, SelectedMealType);
         }
 
+        private void SetTimeFromMealType(MealType mealType)
+        {
+            var ranges = _settingsService.Settings.MealTimeRanges;
+            var range = ranges.FirstOrDefault(r => r.MealType == mealType);
+            if (range != null && TimeSpan.TryParse(range.Start, out var start))
+            {
+                _updatingFromMealType = true;
+                _mealHour = start.Hours;
+                _mealMinute = start.Minutes;
+                var newText = $"{_mealHour:D2}:{_mealMinute:D2}";
+                _mealTimeText = newText;
+                OnPropertyChanged(nameof(MealHour));
+                OnPropertyChanged(nameof(MealMinute));
+                OnPropertyChanged(nameof(MealHourDisplay));
+                OnPropertyChanged(nameof(MealMinuteDisplay));
+                OnPropertyChanged(nameof(MealTimeText));
+                ValidateTime();
+                _updatingFromMealType = false;
+            }
+        }
+
+        private void SyncTimeTextFromParts()
+        {
+            if (_updatingFromMealType) return;
+            var newText = $"{_mealHour:D2}:{_mealMinute:D2}";
+            _mealTimeText = newText;
+            OnPropertyChanged(nameof(MealTimeText));
+            UpdateAutoMealType();
+            ValidateTime();
+        }
+
         private void UpdateAutoMealType()
         {
             if (ManualMealOverride) return;
             if (TimeSpan.TryParse(MealTimeText, out var time))
             {
                 var ranges = _settingsService.Settings.MealTimeRanges;
-                SelectedMealType = _diaryService.GetMealTypeForTime(time, ranges);
+                var newType = _diaryService.GetMealTypeForTime(time, ranges);
+                // Update the backing field directly to avoid triggering SetTimeFromMealType
+                if (_selectedMealType != newType)
+                {
+                    _selectedMealType = newType;
+                    OnPropertyChanged(nameof(SelectedMealType));
+                }
             }
         }
 
@@ -181,7 +276,13 @@ namespace DDiary.ViewModels
 
         private void ResetForm()
         {
-            MealTimeText = DateTime.Now.ToString("HH:mm");
+            _mealHour = DateTime.Now.Hour;
+            _mealMinute = RoundMinuteTo5(DateTime.Now.Minute);
+            OnPropertyChanged(nameof(MealHour));
+            OnPropertyChanged(nameof(MealMinute));
+            OnPropertyChanged(nameof(MealHourDisplay));
+            OnPropertyChanged(nameof(MealMinuteDisplay));
+            MealTimeText = $"{_mealHour:D2}:{_mealMinute:D2}";
             FoodName = string.Empty;
             PortionGramsText = "0";
             ChoGramsText = "0";

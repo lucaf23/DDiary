@@ -23,6 +23,7 @@ namespace DDiary.Models
         public string DefaultStartupPage { get; set; } = "Today";
         public bool CompactMode { get; set; } = false;
         public string AnimationIntensity { get; set; } = "Normal";
+        public string DiaryViewMode { get; set; } = "Modern";
         public List<MealTimeRangeSetting> MealTimeRanges { get; set; } = GetDefaultMealTimeRanges();
 
         public static List<MealTimeRangeSetting> GetDefaultMealTimeRanges()

@@ -10,6 +10,45 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVis"/>
+        <Style x:Key="SpinnerButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource StripeBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="TimeValueStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="MinWidth" Value="38"/>
+        </Style>
     </UserControl.Resources>
 
     <StackPanel>
@@ -26,26 +65,63 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Hour/Minute Spinner -->
             <StackPanel Grid.Column="0" Margin="0,0,6,0">
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Ora pasto (HH:mm) *"/>
-                <TextBox x:Name="TimeBox"
-                         Style="{StaticResource ModernTextBoxStyle}"
-                         Text="{Binding MealTimeText, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Style="{StaticResource LabelStyle}" Text="Ora pasto *"/>
+                <Border Style="{StaticResource CardStyle}"
+                        Padding="8,6"
+                        Margin="0,2,0,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                        <!-- Hour spinner -->
+                        <StackPanel>
+                            <Button Style="{StaticResource SpinnerButtonStyle}"
+                                    Command="{Binding IncrementHourCommand}"
+                                    Content="▲"/>
+                            <TextBlock Style="{StaticResource TimeValueStyle}"
+                                       Text="{Binding MealHourDisplay}"
+                                       Margin="0,4"/>
+                            <Button Style="{StaticResource SpinnerButtonStyle}"
+                                    Command="{Binding DecrementHourCommand}"
+                                    Content="▼"/>
+                        </StackPanel>
+
+                        <!-- Separator -->
+                        <TextBlock Text=":"
+                                   FontSize="22" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="4,0"/>
+
+                        <!-- Minute spinner -->
+                        <StackPanel>
+                            <Button Style="{StaticResource SpinnerButtonStyle}"
+                                    Command="{Binding IncrementMinuteCommand}"
+                                    Content="▲"/>
+                            <TextBlock Style="{StaticResource TimeValueStyle}"
+                                       Text="{Binding MealMinuteDisplay}"
+                                       Margin="0,4"/>
+                            <Button Style="{StaticResource SpinnerButtonStyle}"
+                                    Command="{Binding DecrementMinuteCommand}"
+                                    Content="▼"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
                 <TextBlock Text="{Binding TimeError}"
                            Style="{StaticResource ErrorTextStyle}"
                            Visibility="{Binding TimeError, Converter={StaticResource StrVis}}"/>
             </StackPanel>
 
             <StackPanel Grid.Column="1" Margin="6,0,0,0">
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Pasto"/>
+                <TextBlock Style="{StaticResource LabelStyle}" Text="Pasto (aggiorna l'ora automaticamente)"/>
                 <ComboBox Style="{StaticResource ModernComboBoxStyle}"
                           ItemsSource="{Binding MealTypeOptions}"
                           DisplayMemberPath="Label"
                           SelectedValuePath="Value"
-                          SelectedValue="{Binding SelectedMealType}"
-                          IsEnabled="{Binding ManualMealOverride}"/>
+                          SelectedValue="{Binding SelectedMealType}"/>
                 <CheckBox Style="{StaticResource ModernCheckBoxStyle}"
-                          Content="Scegli manualmente"
+                          Content="Non rilevare il pasto dall'ora digitata"
                           IsChecked="{Binding ManualMealOverride}"
                           Margin="0,4,0,0"/>
             </StackPanel>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using DDiary.Commands;
 using DDiary.Models;
@@ -91,6 +92,7 @@ namespace DDiary.ViewModels
         }
 
         private double _insulinCarbRatio;
+        /// <summary>Displayed in the UI as "Unità Insulina". Property name kept for backwards-compatibility with existing data.</summary>
         public double InsulinCarbRatio
         {
             get => _insulinCarbRatio;
@@ -162,9 +164,11 @@ namespace DDiary.ViewModels
     {
         private readonly IDiaryService _diaryService;
         private readonly IExportService _exportService;
+        private readonly ISettingsService _settingsService;
 
         private DailyDiary? _model;
         private UserProfile? _userProfile;
+        private int _profileId;
 
         public int DiaryId => _model?.Id ?? 0;
 
@@ -189,6 +193,15 @@ namespace DDiary.ViewModels
             set { SetProperty(ref _physicalActivityNotes, value); if (_model != null) _model.PhysicalActivityNotes = value; }
         }
 
+        private bool _isClassicMode;
+        public bool IsClassicMode
+        {
+            get => _isClassicMode;
+            set { SetProperty(ref _isClassicMode, value); OnPropertyChanged(nameof(ViewModeToggleLabel)); }
+        }
+
+        public string ViewModeToggleLabel => _isClassicMode ? "≡ Vista moderna" : "⊞ Tabella classica";
+
         public ObservableCollection<MealSectionViewModel> MealSections { get; } = new();
 
         private bool _isBusy;
@@ -207,19 +220,25 @@ namespace DDiary.ViewModels
 
         public ICommand SaveDiaryCommand { get; }
         public ICommand DeleteFoodEntryCommand { get; }
+        public ICommand ToggleViewModeCommand { get; }
+        public ICommand AddInlineFoodEntryCommand { get; }
 
-        public DiaryViewModel(IDiaryService diaryService, IExportService exportService)
+        public DiaryViewModel(IDiaryService diaryService, IExportService exportService, ISettingsService settingsService)
         {
             _diaryService = diaryService;
             _exportService = exportService;
+            _settingsService = settingsService;
 
             SaveDiaryCommand = new RelayCommand(async () => await SaveAsync());
             DeleteFoodEntryCommand = new RelayCommand<int>(async id => await DeleteFoodEntryAsync(id));
+            ToggleViewModeCommand = new RelayCommand(async () => await ToggleViewModeAsync());
+            AddInlineFoodEntryCommand = new RelayCommand<MealType>(async mt => await AddInlineFoodEntryAsync(mt));
         }
 
         public async Task LoadAsync(int profileId, DateTime? date = null)
         {
             IsBusy = true;
+            _profileId = profileId;
             try
             {
                 DailyDiary diary;
@@ -235,6 +254,8 @@ namespace DDiary.ViewModels
                 Notes = diary.Notes;
                 PhysicalActivityNotes = diary.PhysicalActivityNotes;
 
+                IsClassicMode = _settingsService.Settings.DiaryViewMode == "Classic";
+
                 MealSections.Clear();
                 foreach (var section in diary.MealSections.OrderBy(s => s.MealType))
                     MealSections.Add(new MealSectionViewModel(section));
@@ -249,8 +270,6 @@ namespace DDiary.ViewModels
                         MealSections.Add(new MealSectionViewModel(newSection));
                     }
                 }
-
-                // Sections are pre-ordered when loaded from the database
             }
             finally
             {
@@ -286,6 +305,31 @@ namespace DDiary.ViewModels
             await _diaryService.DeleteFoodEntryAsync(entryId);
             foreach (var section in MealSections)
                 section.RemoveFoodEntry(entryId);
+        }
+
+        private async Task ToggleViewModeAsync()
+        {
+            IsClassicMode = !IsClassicMode;
+            _settingsService.Settings.DiaryViewMode = IsClassicMode ? "Classic" : "Modern";
+            await _settingsService.SaveAsync();
+        }
+
+        private async Task AddInlineFoodEntryAsync(MealType mealType)
+        {
+            if (_model == null) return;
+            var entry = new FoodEntry
+            {
+                MealTime = TimeSpan.FromHours(DateTime.Now.Hour),
+                FoodName = "",
+                PortionGrams = 0,
+                ChoGrams = 0,
+                CreatedAt = DateTime.Now
+            };
+            var added = await _diaryService.AddFoodEntryAsync(_model.Id, _profileId, entry, mealType);
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                AddFoodEntryToSection(mealType, added);
+            });
         }
 
         public DailyDiary? GetModel() => _model;

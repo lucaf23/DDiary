@@ -191,7 +191,7 @@
         </Border>
 
         <!-- ═══════════════════════════════════════════
-             FLOATING ACTION BUTTON
+             FLOATING ACTION BUTTON (Add food)
         ═══════════════════════════════════════════ -->
         <Button Grid.Row="1"
                 Style="{StaticResource FabStyle}"
@@ -202,6 +202,26 @@
                 ToolTip="Aggiungi alimento"
                 Visibility="{Binding ShowDiary, Converter={StaticResource BoolVis}}">
             <TextBlock Text="+" FontSize="26" FontWeight="Light" VerticalAlignment="Center"/>
+        </Button>
+
+        <!-- ═══════════════════════════════════════════
+             FLOATING ACTION BUTTON (Toggle view mode)
+        ═══════════════════════════════════════════ -->
+        <Button Grid.Row="1"
+                Style="{StaticResource FabStyle}"
+                Width="46" Height="46"
+                Command="{Binding DiaryVM.ToggleViewModeCommand}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0,0,90,26"
+                ToolTip="{Binding DiaryVM.ViewModeToggleLabel}"
+                Visibility="{Binding ShowDiary, Converter={StaticResource BoolVis}}">
+            <TextBlock Text="{Binding DiaryVM.ViewModeToggleLabel}"
+                       FontSize="11"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       MaxWidth="38"
+                       VerticalAlignment="Center"/>
         </Button>
 
         <!-- ═══════════════════════════════════════════
