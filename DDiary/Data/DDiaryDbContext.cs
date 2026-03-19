@@ -54,7 +54,7 @@ namespace DDiary.Data
                 e.Property(x => x.MealType).HasConversion<string>();
                 e.Property(x => x.MealTime)
                     .HasConversion(
-                        v => v.ToString(@"HH\:mm"),
+                        v => v.ToString(@"hh\:mm"),
                         v => TimeSpan.Parse(v))
                     .HasDefaultValueSql("'00:00'");
             });
