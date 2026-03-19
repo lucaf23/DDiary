@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml.Hosting;
 using DDiary.Data;
 using DDiary.Helpers;
 using DDiary.Repositories;
@@ -19,10 +20,14 @@ namespace DDiary
     public partial class App : System.Windows.Application
     {
         private ServiceProvider? _serviceProvider;
+        private WindowsXamlManager? _xamlManager;
 
         protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // Inizializza il framework WinUI 3 per il thread corrente (richiesto per XAML Islands).
+            _xamlManager = WindowsXamlManager.InitializeForCurrentThread();
 
             var services = new ServiceCollection();
             ConfigureServices(services);
@@ -50,6 +55,7 @@ namespace DDiary
 
         protected override void OnExit(ExitEventArgs e)
         {
+            _xamlManager?.Dispose();
             _serviceProvider?.Dispose();
             base.OnExit(e);
         }
