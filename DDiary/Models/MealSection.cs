@@ -8,6 +8,7 @@ namespace DDiary.Models
         public int Id { get; set; }
         public int DailyDiaryId { get; set; }
         public MealType MealType { get; set; }
+        public TimeSpan MealTime { get; set; } = TimeSpan.Zero;
         public double TotalCho { get; set; } = 0;
         public double InsulinCarbRatio { get; set; } = 0;
         public double? GlycemiaBefore { get; set; }

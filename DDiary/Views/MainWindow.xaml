@@ -240,7 +240,7 @@
                 Margin="0,0,24,24"
                 ToolTip="Aggiungi alimento"
                 Visibility="{Binding ShowDiary, Converter={StaticResource BoolVis}}">
-            <TextBlock Text="+" FontSize="26" FontWeight="Light" VerticalAlignment="Center"/>
+            <TextBlock Text="＋" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"/>
         </Button>
 
         <!-- ═══════════════════════════════════════════
@@ -255,11 +255,9 @@
                 Margin="0,0,90,26"
                 ToolTip="{Binding DiaryVM.ViewModeToggleLabel}"
                 Visibility="{Binding ShowDiary, Converter={StaticResource BoolVis}}">
-            <TextBlock Text="{Binding DiaryVM.ViewModeToggleLabel}"
-                       FontSize="11"
+            <TextBlock Text="{Binding DiaryVM.ViewModeIcon}"
+                       FontSize="18"
                        TextAlignment="Center"
-                       TextWrapping="Wrap"
-                       MaxWidth="38"
                        VerticalAlignment="Center"/>
         </Button>
 
