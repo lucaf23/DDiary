@@ -281,7 +281,20 @@
                         <Setter Property="Padding" Value="28"/>
                     </Style>
                 </Border.Style>
-                <views:FoodInsertView DataContext="{Binding FoodInsertVM}"/>
+                <StackPanel>
+                    <!-- WinUI 3 TimePicker Island -->
+                    <Label Content="Ora pasto *"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           FontFamily="Segoe UI"
+                           FontSize="13"
+                           Padding="0"
+                           Margin="0,0,0,2"/>
+                    <Border x:Name="TimePickerHost"
+                            Width="150" Height="40"
+                            HorizontalAlignment="Left"
+                            Margin="0,0,0,12"/>
+                    <views:FoodInsertView DataContext="{Binding FoodInsertVM}"/>
+                </StackPanel>
             </Border>
         </Grid>
 

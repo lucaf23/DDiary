@@ -19,92 +19,14 @@
                    FontSize="18"
                    Margin="0,0,0,16"/>
 
-        <!-- Time row -->
-        <Grid Margin="0,0,0,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Ora pasto – spinner a rullo in formato 24h (HH:mm) -->
-            <StackPanel Grid.Column="0" Margin="0,0,6,0">
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Ora pasto *"/>
-                <!--
-                    Il separatore ":" è un TextBlock non modificabile:
-                    l'utente non può cancellarlo né inserire testo arbitrario.
-                    Le ore (00-23) e i minuti (00-59) si modificano solo
-                    tramite i pulsanti ▲/▼ o la rotella del mouse.
-                -->
-                <Border Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        Padding="10,6"
-                        Margin="0,2,0,0">
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-
-                        <!-- ── Rullo Ore (00-23) ── -->
-                        <StackPanel HorizontalAlignment="Center">
-                            <Button Style="{StaticResource SpinnerButtonStyle}"
-                                    Content="▲"
-                                    Click="HourUp_Click"
-                                    HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding MealHourDisplay}"
-                                       FontSize="18" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
-                                       TextAlignment="Center"
-                                       Width="32"
-                                       Margin="0,3"
-                                       PreviewMouseWheel="HourSpinner_MouseWheel"/>
-                            <Button Style="{StaticResource SpinnerButtonStyle}"
-                                    Content="▼"
-                                    Click="HourDown_Click"
-                                    HorizontalAlignment="Center"/>
-                        </StackPanel>
-
-                        <!-- Separatore fisso ":" – non eliminabile né modificabile -->
-                        <TextBlock Text=":"
-                                   FontSize="20" FontWeight="Bold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                   VerticalAlignment="Center"
-                                   Margin="6,0"/>
-
-                        <!-- ── Rullo Minuti (00-59) ── -->
-                        <StackPanel HorizontalAlignment="Center">
-                            <Button Style="{StaticResource SpinnerButtonStyle}"
-                                    Content="▲"
-                                    Click="MinUp_Click"
-                                    HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding MealMinuteDisplay}"
-                                       FontSize="18" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
-                                       TextAlignment="Center"
-                                       Width="32"
-                                       Margin="0,3"
-                                       PreviewMouseWheel="MinSpinner_MouseWheel"/>
-                            <Button Style="{StaticResource SpinnerButtonStyle}"
-                                    Content="▼"
-                                    Click="MinDown_Click"
-                                    HorizontalAlignment="Center"/>
-                        </StackPanel>
-
-                    </StackPanel>
-                </Border>
-                <TextBlock Text="{Binding TimeError}"
-                           Style="{StaticResource ErrorTextStyle}"
-                           Visibility="{Binding TimeError, Converter={StaticResource StrVis}}"/>
-            </StackPanel>
-
-            <StackPanel Grid.Column="1" Margin="6,0,0,0">
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Tipo Pasto"/>
-                <ComboBox Style="{StaticResource ModernComboBoxStyle}"
-                          ItemsSource="{Binding MealTypeOptions}"
-                          DisplayMemberPath="Label"
-                          SelectedItem="{Binding SelectedMealTypeOption}"/>
-            </StackPanel>
-        </Grid>
+        <!-- Tipo pasto row -->
+        <StackPanel Margin="0,0,0,12">
+            <TextBlock Style="{StaticResource LabelStyle}" Text="Tipo Pasto"/>
+            <ComboBox Style="{StaticResource ModernComboBoxStyle}"
+                      ItemsSource="{Binding MealTypeOptions}"
+                      DisplayMemberPath="Label"
+                      SelectedItem="{Binding SelectedMealTypeOption}"/>
+        </StackPanel>
 
         <!-- Food name -->
         <StackPanel Margin="0,0,0,12">

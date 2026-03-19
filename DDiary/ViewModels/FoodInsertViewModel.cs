@@ -200,6 +200,15 @@ namespace DDiary.ViewModels
 
         public Func<FoodEntry, MealType, Task>? OnSave { get; set; }
 
+        /// <summary>
+        /// Imposta l'orario del pasto direttamente da un <see cref="TimeSpan"/> (usato dal TimePicker nativo WinUI 3).
+        /// </summary>
+        public void SetMealTime(TimeSpan time)
+        {
+            MealHour   = time.Hours;
+            MealMinute = time.Minutes;
+        }
+
         private async Task SaveAsync()
         {
             if (!IsValid) return;

@@ -81,3 +81,4 @@ __pycache__/
 # Rider specific files
 .idea/
 *.sln.iml
+.mono
