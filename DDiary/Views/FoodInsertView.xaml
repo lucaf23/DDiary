@@ -114,16 +114,11 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Margin="6,0,0,0">
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Pasto (aggiorna l'ora automaticamente)"/>
+                <TextBlock Style="{StaticResource LabelStyle}" Text="Tipo Pasto"/>
                 <ComboBox Style="{StaticResource ModernComboBoxStyle}"
                           ItemsSource="{Binding MealTypeOptions}"
                           DisplayMemberPath="Label"
-                          SelectedValuePath="Value"
-                          SelectedValue="{Binding SelectedMealType}"/>
-                <CheckBox Style="{StaticResource ModernCheckBoxStyle}"
-                          Content="Non rilevare il pasto dall'ora digitata"
-                          IsChecked="{Binding ManualMealOverride}"
-                          Margin="0,4,0,0"/>
+                          SelectedItem="{Binding SelectedMealTypeOption}"/>
             </StackPanel>
         </Grid>
 
