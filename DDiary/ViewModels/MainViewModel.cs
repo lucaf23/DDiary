@@ -90,6 +90,7 @@ namespace DDiary.ViewModels
         public ICommand ExportPngCommand { get; }
         public ICommand ExportPdfCommand { get; }
         public ICommand ToggleFullscreenCommand { get; }
+        public ICommand CopyScreenshotCommand { get; }
 
         // --- Fullscreen state ---
         private bool _isFullscreen;
@@ -137,6 +138,7 @@ namespace DDiary.ViewModels
             ExportPngCommand = new RelayCommand(async () => await ExportPngAsync());
             ExportPdfCommand = new RelayCommand(async () => await ExportPdfAsync());
             ToggleFullscreenCommand = new RelayCommand(ToggleFullscreen);
+            CopyScreenshotCommand = new RelayCommand(CopyScreenshot);
 
             // Wire events
             HistoryVM.DiarySelected += date => _ = OpenDiaryByDateAsync(date);
@@ -250,16 +252,36 @@ namespace DDiary.ViewModels
         private void ToggleFullscreen()
         {
             var w = System.Windows.Application.Current.MainWindow;
-            if (w.WindowState == WindowState.Maximized && IsFullscreen)
+            if (IsFullscreen)
             {
+                w.WindowStyle = WindowStyle.SingleBorderWindow;
+                w.ResizeMode = ResizeMode.CanResize;
                 w.WindowState = WindowState.Normal;
                 IsFullscreen = false;
             }
             else
             {
+                w.WindowState = WindowState.Normal;
+                w.WindowStyle = WindowStyle.None;
+                w.ResizeMode = ResizeMode.NoResize;
                 w.WindowState = WindowState.Maximized;
                 IsFullscreen = true;
                 IsSidebarOpen = false;
+            }
+        }
+
+        private void CopyScreenshot()
+        {
+            try
+            {
+                var element = DiaryElementProvider?.Invoke();
+                if (element == null) return;
+                _exportService.CopyToClipboard(element);
+                StatusMessage = "Screenshot copiato negli appunti.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Errore screenshot: {ex.Message}";
             }
         }
 

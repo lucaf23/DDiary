@@ -21,10 +21,10 @@ namespace DDiary.Views
                 }
             };
 
-            // Keep IsFullscreen in sync when the user maximises/restores via OS controls
+            // Keep IsFullscreen in sync when the user restores via OS controls (only when not in true fullscreen)
             StateChanged += (_, _) =>
             {
-                if (DataContext is MainViewModel vm)
+                if (DataContext is MainViewModel vm && !vm.IsFullscreen)
                     vm.IsFullscreen = WindowState == System.Windows.WindowState.Maximized;
             };
         }
