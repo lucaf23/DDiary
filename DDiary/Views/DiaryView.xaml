@@ -267,48 +267,12 @@
                                                      Text="{Binding InsulinCarbRatio, StringFormat='{}{0:F1}', UpdateSourceTrigger=PropertyChanged}"/>
                                         </StackPanel>
 
-                                        <!-- Ora pasto spinner -->
+                                        <!-- Ora pasto -->
                                         <StackPanel Grid.Column="3" Margin="4,0">
                                             <TextBlock Style="{StaticResource LabelStyle}" Text="Ora pasto"/>
-                                            <Border Style="{StaticResource CardStyle}" Padding="6,4" Margin="0,0,0,0">
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <StackPanel>
-                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
-                                                                Command="{Binding IncrementHourCommand}"
-                                                                Content="▲"/>
-                                                        <TextBlock FontSize="18" FontWeight="SemiBold"
-                                                                   HorizontalAlignment="Center"
-                                                                   VerticalAlignment="Center"
-                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                                                   MinWidth="28"
-                                                                   Margin="0,3"
-                                                                   Text="{Binding MealHourDisplay}"/>
-                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
-                                                                Command="{Binding DecrementHourCommand}"
-                                                                Content="▼"/>
-                                                    </StackPanel>
-                                                    <TextBlock Text=":"
-                                                               FontSize="18" FontWeight="Bold"
-                                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                                               VerticalAlignment="Center"
-                                                               Margin="3,0"/>
-                                                    <StackPanel>
-                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
-                                                                Command="{Binding IncrementMinuteCommand}"
-                                                                Content="▲"/>
-                                                        <TextBlock FontSize="18" FontWeight="SemiBold"
-                                                                   HorizontalAlignment="Center"
-                                                                   VerticalAlignment="Center"
-                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                                                   MinWidth="28"
-                                                                   Margin="0,3"
-                                                                   Text="{Binding MealMinuteDisplay}"/>
-                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
-                                                                Command="{Binding DecrementMinuteCommand}"
-                                                                Content="▼"/>
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </Border>
+                                            <TextBox Style="{StaticResource TimePickerStyle}"
+                                                     Text="{Binding MealTimeText, UpdateSourceTrigger=LostFocus}"
+                                                     Margin="0,2,0,0"/>
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="4" Margin="4,0,0,0">
@@ -571,50 +535,14 @@
                                                      Padding="4,3"/>
                                         </StackPanel>
 
-                                        <!-- Ora pasto spinner -->
+                                        <!-- Ora pasto -->
                                         <StackPanel Grid.Column="3" Margin="4,0">
                                             <TextBlock Text="Ora pasto"
                                                        Style="{StaticResource TableHeaderLabelStyle}"
                                                        Margin="0,0,0,2"/>
-                                            <Border Style="{StaticResource CardStyle}" Padding="6,3">
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <StackPanel>
-                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
-                                                                Command="{Binding IncrementHourCommand}"
-                                                                Content="▲"/>
-                                                        <TextBlock FontSize="16" FontWeight="SemiBold"
-                                                                   HorizontalAlignment="Center"
-                                                                   VerticalAlignment="Center"
-                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                                                   MinWidth="26"
-                                                                   Margin="0,2"
-                                                                   Text="{Binding MealHourDisplay}"/>
-                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
-                                                                Command="{Binding DecrementHourCommand}"
-                                                                Content="▼"/>
-                                                    </StackPanel>
-                                                    <TextBlock Text=":"
-                                                               FontSize="16" FontWeight="Bold"
-                                                               Foreground="{DynamicResource TextSecondaryBrush}"
-                                                               VerticalAlignment="Center"
-                                                               Margin="2,0"/>
-                                                    <StackPanel>
-                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
-                                                                Command="{Binding IncrementMinuteCommand}"
-                                                                Content="▲"/>
-                                                        <TextBlock FontSize="16" FontWeight="SemiBold"
-                                                                   HorizontalAlignment="Center"
-                                                                   VerticalAlignment="Center"
-                                                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                                                   MinWidth="26"
-                                                                   Margin="0,2"
-                                                                   Text="{Binding MealMinuteDisplay}"/>
-                                                        <Button Style="{StaticResource SpinnerButtonStyle}"
-                                                                Command="{Binding DecrementMinuteCommand}"
-                                                                Content="▼"/>
-                                                    </StackPanel>
-                                                </StackPanel>
-                                            </Border>
+                                            <TextBox Style="{StaticResource TimePickerStyle}"
+                                                     Text="{Binding MealTimeText, UpdateSourceTrigger=LostFocus}"
+                                                     Padding="4,3"/>
                                         </StackPanel>
 
                                         <!-- Note pasto -->
