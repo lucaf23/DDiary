@@ -103,7 +103,26 @@ namespace DDiary.ViewModels
             set
             {
                 if (SetProperty(ref _selectedMealType, value))
+                {
+                    OnPropertyChanged(nameof(SelectedMealTypeOption));
                     SetTimeFromMealType(value);
+                }
+            }
+        }
+
+        /// <summary>Bound to ComboBox SelectedItem to avoid SelectedValue/SelectedValuePath display quirks.</summary>
+        public MealTypeOption? SelectedMealTypeOption
+        {
+            get => MealTypeOptions.FirstOrDefault(o => o.Value == _selectedMealType);
+            set
+            {
+                if (value != null && value.Value != _selectedMealType)
+                {
+                    _selectedMealType = value.Value;
+                    OnPropertyChanged(nameof(SelectedMealType));
+                    OnPropertyChanged(nameof(SelectedMealTypeOption));
+                    SetTimeFromMealType(value.Value);
+                }
             }
         }
 
@@ -240,6 +259,7 @@ namespace DDiary.ViewModels
                 {
                     _selectedMealType = newType;
                     OnPropertyChanged(nameof(SelectedMealType));
+                    OnPropertyChanged(nameof(SelectedMealTypeOption));
                 }
             }
         }

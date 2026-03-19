@@ -135,9 +135,13 @@ namespace DDiary.ViewModels
                 FoodEntries.Add(new FoodEntryViewModel(entry));
         }
 
+        /// <summary>Sum of all food entries' portion weights for this meal.</summary>
+        public double TotalPortionGrams => FoodEntries.Sum(f => f.PortionGrams);
+
         public void RecalculateTotalCho()
         {
             TotalCho = FoodEntries.Sum(f => f.ChoGrams);
+            OnPropertyChanged(nameof(TotalPortionGrams));
         }
 
         public void AddFoodEntry(FoodEntry entry)
