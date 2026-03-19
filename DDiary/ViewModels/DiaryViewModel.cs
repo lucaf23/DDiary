@@ -92,10 +92,6 @@ namespace DDiary.ViewModels
         public bool HasFoodEntries => FoodEntries.Count > 0;
 
         public ICommand ToggleSectionCommand { get; }
-        public ICommand IncrementHourCommand { get; }
-        public ICommand DecrementHourCommand { get; }
-        public ICommand IncrementMinuteCommand { get; }
-        public ICommand DecrementMinuteCommand { get; }
 
         public ObservableCollection<FoodEntryViewModel> FoodEntries { get; } = new();
 
@@ -135,7 +131,7 @@ namespace DDiary.ViewModels
             set { SetProperty(ref _notes, value); _model.Notes = value; }
         }
 
-        // ── Meal time spinner ──
+        // ── Meal time ──
         private int _mealHour;
         public int MealHour
         {
@@ -145,7 +141,7 @@ namespace DDiary.ViewModels
                 value = ((value % 24) + 24) % 24;
                 SetProperty(ref _mealHour, value);
                 OnPropertyChanged(nameof(MealHourDisplay));
-                SyncMealTime();
+                SyncMealTimeFromParts();
             }
         }
 
@@ -158,18 +154,41 @@ namespace DDiary.ViewModels
                 value = ((value % 60) + 60) % 60;
                 SetProperty(ref _mealMinute, value);
                 OnPropertyChanged(nameof(MealMinuteDisplay));
-                SyncMealTime();
+                SyncMealTimeFromParts();
             }
         }
 
         public string MealHourDisplay => _mealHour.ToString("D2");
         public string MealMinuteDisplay => _mealMinute.ToString("D2");
 
+        private string _mealTimeText = "00:00";
+        public string MealTimeText
+        {
+            get => _mealTimeText;
+            set
+            {
+                if (TimeSpan.TryParse(value, out var ts))
+                {
+                    SetProperty(ref _mealTimeText, value);
+                    MealHour = ts.Hours;
+                    MealMinute = ts.Minutes;
+                }
+                else
+                {
+                    // Revert to the last valid value so the TextBox shows the correct time
+                    OnPropertyChanged(nameof(MealTimeText));
+                }
+            }
+        }
+
         public TimeSpan MealTime => _model.MealTime;
 
-        private void SyncMealTime()
+        private void SyncMealTimeFromParts()
         {
             _model.MealTime = new TimeSpan(_mealHour, _mealMinute, 0);
+            var newText = $"{_mealHour:D2}:{_mealMinute:D2}";
+            _mealTimeText = newText;
+            OnPropertyChanged(nameof(MealTimeText));
         }
 
         public MealSection Model => _model;
@@ -184,6 +203,7 @@ namespace DDiary.ViewModels
             _notes = model.Notes;
             _mealHour = model.MealTime.Hours;
             _mealMinute = model.MealTime.Minutes;
+            _mealTimeText = $"{_mealHour:D2}:{_mealMinute:D2}";
 
             foreach (var entry in model.FoodEntries.OrderBy(f => f.SortOrder))
                 FoodEntries.Add(new FoodEntryViewModel(entry));
@@ -192,10 +212,6 @@ namespace DDiary.ViewModels
             _isExpanded = FoodEntries.Count > 0;
 
             ToggleSectionCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
-            IncrementHourCommand = new RelayCommand(() => MealHour++);
-            DecrementHourCommand = new RelayCommand(() => MealHour--);
-            IncrementMinuteCommand = new RelayCommand(() => MealMinute += 5);
-            DecrementMinuteCommand = new RelayCommand(() => MealMinute -= 5);
         }
 
         /// <summary>Sum of all food entries' portion weights for this meal.</summary>

@@ -57,21 +57,27 @@ namespace DDiary.ViewModels
             get => _mealTimeText;
             set
             {
-                SetProperty(ref _mealTimeText, value);
                 if (!_updatingFromMealType)
                 {
                     if (TimeSpan.TryParse(value, out var ts))
                     {
-                        _mealHour = ts.Hours;
-                        _mealMinute = ts.Minutes;
-                        OnPropertyChanged(nameof(MealHour));
-                        OnPropertyChanged(nameof(MealMinute));
-                        OnPropertyChanged(nameof(MealHourDisplay));
-                        OnPropertyChanged(nameof(MealMinuteDisplay));
+                        SetProperty(ref _mealTimeText, value);
+                        MealHour = ts.Hours;
+                        MealMinute = ts.Minutes;
+                        UpdateAutoMealType();
                     }
-                    UpdateAutoMealType();
+                    else
+                    {
+                        // Revert to last valid value
+                        OnPropertyChanged(nameof(MealTimeText));
+                    }
+                    ValidateTime();
                 }
-                ValidateTime();
+                else
+                {
+                    SetProperty(ref _mealTimeText, value);
+                    ValidateTime();
+                }
             }
         }
 
@@ -160,10 +166,6 @@ namespace DDiary.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand SaveAndAddCommand { get; }
         public ICommand CancelCommand { get; }
-        public ICommand IncrementHourCommand { get; }
-        public ICommand DecrementHourCommand { get; }
-        public ICommand IncrementMinuteCommand { get; }
-        public ICommand DecrementMinuteCommand { get; }
 
         public event Action? RequestClose;
         public event Action? RequestSaveAndAdd;
@@ -176,10 +178,6 @@ namespace DDiary.ViewModels
             SaveCommand = new RelayCommand(async () => await SaveAsync(), () => IsValid);
             SaveAndAddCommand = new RelayCommand(async () => await SaveAndAddAsync(), () => IsValid);
             CancelCommand = new RelayCommand(() => RequestClose?.Invoke());
-            IncrementHourCommand = new RelayCommand(() => MealHour++);
-            DecrementHourCommand = new RelayCommand(() => MealHour--);
-            IncrementMinuteCommand = new RelayCommand(() => MealMinute += 5);
-            DecrementMinuteCommand = new RelayCommand(() => MealMinute -= 5);
 
             UpdateAutoMealType();
         }
