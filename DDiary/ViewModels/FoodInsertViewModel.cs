@@ -51,6 +51,22 @@ namespace DDiary.ViewModels
         public string MealHourDisplay => _mealHour.ToString("D2");
         public string MealMinuteDisplay => _mealMinute.ToString("D2");
 
+        /// <summary>
+        /// Ora del pasto come <see cref="TimeSpan"/> (formato 24h).
+        /// Proprietà di convenienza per leggere o impostare l'orario in un colpo solo.
+        /// </summary>
+        public TimeSpan? MealTime
+        {
+            get => new TimeSpan(_mealHour, _mealMinute, 0);
+            set
+            {
+                if (!value.HasValue) return;
+                if (value.Value.Hours == _mealHour && value.Value.Minutes == _mealMinute) return;
+                MealHour = value.Value.Hours;
+                MealMinute = value.Value.Minutes;
+            }
+        }
+
         private string _mealTimeText = DateTime.Now.ToString("HH:mm");
         public string MealTimeText
         {
@@ -230,6 +246,7 @@ namespace DDiary.ViewModels
                 OnPropertyChanged(nameof(MealHourDisplay));
                 OnPropertyChanged(nameof(MealMinuteDisplay));
                 OnPropertyChanged(nameof(MealTimeText));
+                OnPropertyChanged(nameof(MealTime));
                 ValidateTime();
                 _updatingFromMealType = false;
             }
@@ -241,6 +258,7 @@ namespace DDiary.ViewModels
             var newText = $"{_mealHour:D2}:{_mealMinute:D2}";
             _mealTimeText = newText;
             OnPropertyChanged(nameof(MealTimeText));
+            OnPropertyChanged(nameof(MealTime));
             UpdateAutoMealType();
             ValidateTime();
         }
