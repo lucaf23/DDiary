@@ -82,6 +82,17 @@ namespace DDiary.ViewModels
             _ => _model.MealType.ToString()
         };
 
+        private bool _isExpanded;
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set => SetProperty(ref _isExpanded, value);
+        }
+
+        public bool HasFoodEntries => FoodEntries.Count > 0;
+
+        public ICommand ToggleSectionCommand { get; }
+
         public ObservableCollection<FoodEntryViewModel> FoodEntries { get; } = new();
 
         private double _totalCho;
@@ -133,6 +144,11 @@ namespace DDiary.ViewModels
 
             foreach (var entry in model.FoodEntries.OrderBy(f => f.SortOrder))
                 FoodEntries.Add(new FoodEntryViewModel(entry));
+
+            // Start expanded only when the section already has entries
+            _isExpanded = FoodEntries.Count > 0;
+
+            ToggleSectionCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
         }
 
         /// <summary>Sum of all food entries' portion weights for this meal.</summary>
@@ -148,6 +164,8 @@ namespace DDiary.ViewModels
         {
             FoodEntries.Add(new FoodEntryViewModel(entry));
             RecalculateTotalCho();
+            OnPropertyChanged(nameof(HasFoodEntries));
+            IsExpanded = true;
         }
 
         public void RemoveFoodEntry(int entryId)
@@ -157,6 +175,9 @@ namespace DDiary.ViewModels
             {
                 FoodEntries.Remove(vm);
                 RecalculateTotalCho();
+                OnPropertyChanged(nameof(HasFoodEntries));
+                if (FoodEntries.Count == 0)
+                    IsExpanded = false;
             }
         }
     }

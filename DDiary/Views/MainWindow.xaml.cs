@@ -20,6 +20,13 @@ namespace DDiary.Views
                     await vm.InitializeAsync();
                 }
             };
+
+            // Keep IsFullscreen in sync when the user maximises/restores via OS controls
+            StateChanged += (_, _) =>
+            {
+                if (DataContext is MainViewModel vm)
+                    vm.IsFullscreen = WindowState == System.Windows.WindowState.Maximized;
+            };
         }
 
         private void Overlay_MouseDown(object sender, MouseButtonEventArgs e)
