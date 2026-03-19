@@ -42,6 +42,7 @@
                              SelectedItem="{Binding SelectedProfile}"
                              Background="Transparent"
                              BorderThickness="0"
+                             HorizontalContentAlignment="Stretch"
                              Margin="0,8,0,8">
                         <ListBox.ItemTemplate>
                             <DataTemplate DataType="{x:Type models:UserProfile}">
