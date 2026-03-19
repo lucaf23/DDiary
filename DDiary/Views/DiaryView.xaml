@@ -9,6 +9,57 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVis"/>
+
+        <!-- Classic Table DataGrid style -->
+        <Style x:Key="ClassicDataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="{DynamicResource BackgroundBrush}"/>
+            <Setter Property="AlternatingRowBackground" Value="{DynamicResource StripeBrush}"/>
+            <Setter Property="GridLinesVisibility" Value="All"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeight" Value="38"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="CanUserReorderColumns" Value="False"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="SelectionUnit" Value="Cell"/>
+        </Style>
+
+        <Style x:Key="ClassicColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="{DynamicResource TableHeaderBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="ClassicCellStyle" TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsEditing" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -18,7 +69,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- ── Diary Header ── -->
+        <!-- ── Diary Header (date + save only) ── -->
         <Border Grid.Row="0"
                 Style="{StaticResource CardStyle}"
                 Margin="16,12,16,8">
@@ -28,49 +79,30 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0">
-                    <TextBlock Style="{StaticResource SectionHeaderStyle}"
-                               FontSize="20"
-                               Text="{Binding Date, StringFormat='Diario del {0:dddd dd MMMM yyyy}'}"/>
-
-                    <Grid Margin="0,8,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Style="{StaticResource LabelStyle}" Text="🏃 Attività fisica"/>
-                            <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                     Text="{Binding PhysicalActivityNotes, UpdateSourceTrigger=PropertyChanged}"
-                                     AcceptsReturn="False"
-                                     ToolTip="Descrivi l'attività fisica svolta oggi"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Style="{StaticResource LabelStyle}" Text="📝 Note generali"/>
-                            <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                     Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
-                                     AcceptsReturn="False"/>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+                <TextBlock Grid.Column="0"
+                           Style="{StaticResource SectionHeaderStyle}"
+                           FontSize="20"
+                           VerticalAlignment="Center"
+                           Text="{Binding Date, StringFormat='Diario del {0:dddd dd MMMM yyyy}'}"/>
 
                 <Button Grid.Column="1"
                         Style="{StaticResource PrimaryButtonStyle}"
                         Command="{Binding SaveDiaryCommand}"
                         Margin="12,0,0,0"
-                        VerticalAlignment="Top">
+                        VerticalAlignment="Center">
                     💾 Salva
                 </Button>
             </Grid>
         </Border>
 
-        <!-- ── Meal Sections Table ── -->
+        <!-- ── Main Content: Modern View OR Classic View ── -->
+
+        <!-- MODERN VIEW -->
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
-                      Padding="16,0,16,16">
+                      Padding="16,0,16,16"
+                      Visibility="{Binding IsClassicMode, Converter={StaticResource InvBoolVis}}">
             <ItemsControl ItemsSource="{Binding MealSections}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:MealSectionViewModel}">
@@ -78,6 +110,7 @@
                                 Margin="0,0,0,10">
                             <Grid>
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
@@ -111,7 +144,7 @@
                                     </Grid>
                                 </Border>
 
-                                <!-- Glycemia + Ratio row -->
+                                <!-- Glycemia + Insulin row -->
                                 <Grid Grid.Row="1" Margin="0,12,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -133,7 +166,7 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="2" Margin="4,0">
-                                        <TextBlock Style="{StaticResource LabelStyle}" Text="Rapporto ins/carb (1:X)"/>
+                                        <TextBlock Style="{StaticResource LabelStyle}" Text="Unità Insulina"/>
                                         <TextBox Style="{StaticResource ModernTextBoxStyle}"
                                                  Text="{Binding InsulinCarbRatio, StringFormat='{}{0:F1}', UpdateSourceTrigger=PropertyChanged}"/>
                                     </StackPanel>
@@ -230,12 +263,170 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
+                                <!-- Add inline row button -->
+                                <Button Grid.Row="4"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,6,0,0"
+                                        Padding="10,4"
+                                        FontSize="12"
+                                        Background="Transparent"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        BorderThickness="1"
+                                        Cursor="Hand"
+                                        ToolTip="Aggiungi una riga vuota"
+                                        Command="{Binding DataContext.AddInlineFoodEntryCommand,
+                                                  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding MealType}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="＋" FontSize="13" Foreground="{DynamicResource AccentBrush}" Margin="0,0,4,0"/>
+                                        <TextBlock Text="Aggiungi riga" Foreground="{DynamicResource AccentBrush}"/>
+                                    </StackPanel>
+                                </Button>
+
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <!-- CLASSIC TABLE VIEW -->
+        <Grid Grid.Row="1"
+              Margin="16,0,16,16"
+              Visibility="{Binding IsClassicMode, Converter={StaticResource BoolVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="Tabella Diario — Vista classica"
+                       Style="{StaticResource SectionHeaderStyle}"
+                       FontSize="15"
+                       Margin="0,8,0,8"/>
+
+            <DataGrid Grid.Row="1"
+                      ItemsSource="{Binding MealSections}"
+                      Style="{StaticResource ClassicDataGridStyle}"
+                      ColumnHeaderStyle="{StaticResource ClassicColumnHeaderStyle}"
+                      CellStyle="{StaticResource ClassicCellStyle}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Pasto"
+                                        Binding="{Binding MealTypeLabel}"
+                                        IsReadOnly="True"
+                                        Width="130">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="6,0"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Glicemia pre&#10;(mg/dL)"
+                                        Binding="{Binding GlycemiaBefore, TargetNullValue='', StringFormat='{}{0:F0}'}"
+                                        Width="110">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="TextBox">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="CHO (g)"
+                                        Binding="{Binding TotalCho, StringFormat='{}{0:F1}'}"
+                                        IsReadOnly="True"
+                                        Width="80">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Unità Insulina"
+                                        Binding="{Binding InsulinCarbRatio, StringFormat='{}{0:F1}'}"
+                                        Width="110">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="TextBox">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Glicemia post&#10;(mg/dL)"
+                                        Binding="{Binding GlycemiaAfter, TargetNullValue='', StringFormat='{}{0:F0}'}"
+                                        Width="110">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="TextBox">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Note"
+                                        Binding="{Binding Notes}"
+                                        Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="4,0"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- ── Bottom Section: Attività fisica + Nota importante del giorno ── -->
+        <Border Grid.Row="2"
+                Style="{StaticResource CardStyle}"
+                Margin="16,0,16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                    <TextBlock Style="{StaticResource LabelStyle}" Text="🏃 Attività fisica"/>
+                    <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                             Text="{Binding PhysicalActivityNotes, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="False"
+                             ToolTip="Descrivi l'attività fisica svolta oggi"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                    <TextBlock Style="{StaticResource LabelStyle}" Text="📌 Nota importante del giorno"/>
+                    <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                             Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="False"
+                             ToolTip="Compleanno, festa, cinema, acquapark, eventi speciali..."/>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <!-- Loading overlay -->
         <Border Grid.Row="0" Grid.RowSpan="3"
