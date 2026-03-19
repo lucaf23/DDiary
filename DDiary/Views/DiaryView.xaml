@@ -30,7 +30,7 @@
             <Setter Property="CanUserReorderColumns" Value="False"/>
             <Setter Property="CanUserResizeRows" Value="False"/>
             <Setter Property="AutoGenerateColumns" Value="False"/>
-            <Setter Property="SelectionUnit" Value="Cell"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
         </Style>
 
         <Style x:Key="ClassicColumnHeaderStyle" TargetType="DataGridColumnHeader">
@@ -354,10 +354,10 @@
         <!-- CLASSIC TABLE VIEW -->
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
                       Padding="16,0,16,16"
                       Visibility="{Binding IsClassicMode, Converter={StaticResource BoolVis}}">
-            <StackPanel>
+            <StackPanel HorizontalAlignment="Stretch">
             <TextBlock Text="Tabella Diario — Vista classica"
                        Style="{StaticResource SectionHeaderStyle}"
                        FontSize="15"
@@ -367,6 +367,7 @@
                       Style="{StaticResource ClassicDataGridStyle}"
                       ColumnHeaderStyle="{StaticResource ClassicColumnHeaderStyle}"
                       CellStyle="{StaticResource ClassicCellStyle}"
+                       HorizontalAlignment="Stretch"
                       RowHeight="52">
                 <DataGrid.Columns>
 

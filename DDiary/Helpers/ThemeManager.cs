@@ -15,13 +15,20 @@ namespace DDiary.Helpers
             if (app == null) return;
 
             // Determine which theme to actually use
-            string resolvedTheme = theme;
-            if (theme == "System")
+            var normalizedTheme = (theme ?? string.Empty).Trim();
+            string resolvedTheme = normalizedTheme;
+
+            if (string.Equals(normalizedTheme, "White", StringComparison.OrdinalIgnoreCase))
+                resolvedTheme = "Light";
+            else if (string.Equals(normalizedTheme, "Black", StringComparison.OrdinalIgnoreCase))
+                resolvedTheme = "Dark";
+
+            if (string.Equals(resolvedTheme, "System", StringComparison.OrdinalIgnoreCase))
             {
                 resolvedTheme = IsSystemDark() ? "Dark" : "Light";
             }
 
-            var themeUri = resolvedTheme == "Dark"
+            var themeUri = string.Equals(resolvedTheme, "Dark", StringComparison.OrdinalIgnoreCase)
                 ? new Uri("Themes/DarkTheme.xaml", UriKind.Relative)
                 : new Uri("Themes/LightTheme.xaml", UriKind.Relative);
 

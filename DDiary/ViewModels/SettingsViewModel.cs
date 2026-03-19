@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DDiary.Commands;
+using DDiary.Helpers;
 using DDiary.Models;
 using DDiary.Services;
 
@@ -21,7 +22,11 @@ namespace DDiary.ViewModels
         public string Theme
         {
             get => _theme;
-            set => SetProperty(ref _theme, value);
+            set
+            {
+                if (SetProperty(ref _theme, value))
+                    ThemeManager.ApplyTheme(value);
+            }
         }
 
         private string _accentColor = "#0078D4";
