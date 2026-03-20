@@ -270,9 +270,52 @@
                                         <!-- Ora pasto -->
                                         <StackPanel Grid.Column="3" Margin="4,0">
                                             <TextBlock Style="{StaticResource LabelStyle}" Text="Ora pasto"/>
-                                            <TextBox Style="{StaticResource TimePickerStyle}"
-                                                     Text="{Binding MealTimeText, UpdateSourceTrigger=LostFocus}"
-                                                     Margin="0,2,0,0"/>
+                                            
+                                            <Grid Margin="0,2,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Hours -->
+                                                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                    <Button Content="▲" 
+                                                            Style="{StaticResource SpinnerButtonStyle}"
+                                                            Command="{Binding IncrementHourCommand}"
+                                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                                    <TextBlock Text="{Binding MealHourDisplay}" 
+                                                               FontSize="16" FontWeight="Bold"
+                                                               TextAlignment="Center"
+                                                               Padding="8,4"/>
+                                                    <Button Content="▼" 
+                                                            Style="{StaticResource SpinnerButtonStyle}"
+                                                            Command="{Binding DecrementHourCommand}"
+                                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                                </StackPanel>
+
+                                                <!-- Divider -->
+                                                <TextBlock Grid.Column="1" Text=":" 
+                                                           FontSize="16" FontWeight="Bold"
+                                                           Padding="4,0"
+                                                           VerticalAlignment="Center"/>
+
+                                                <!-- Minutes -->
+                                                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                    <Button Content="▲" 
+                                                            Style="{StaticResource SpinnerButtonStyle}"
+                                                            Command="{Binding IncrementMinuteCommand}"
+                                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                                    <TextBlock Text="{Binding MealMinuteDisplay}" 
+                                                               FontSize="16" FontWeight="Bold"
+                                                               TextAlignment="Center"
+                                                               Padding="8,4"/>
+                                                    <Button Content="▼" 
+                                                            Style="{StaticResource SpinnerButtonStyle}"
+                                                            Command="{Binding DecrementMinuteCommand}"
+                                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                                </StackPanel>
+                                            </Grid>
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="4" Margin="4,0,0,0">

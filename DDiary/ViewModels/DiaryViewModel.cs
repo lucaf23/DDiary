@@ -93,6 +93,11 @@ namespace DDiary.ViewModels
 
         public ICommand ToggleSectionCommand { get; }
 
+        public ICommand IncrementHourCommand { get; init; }
+        public ICommand DecrementHourCommand { get; init; }
+        public ICommand IncrementMinuteCommand { get; init; }
+        public ICommand DecrementMinuteCommand { get; init; }
+
         public ObservableCollection<FoodEntryViewModel> FoodEntries { get; } = new();
 
         private double _totalCho;
@@ -203,15 +208,13 @@ namespace DDiary.ViewModels
             _notes = model.Notes;
             _mealHour = model.MealTime.Hours;
             _mealMinute = model.MealTime.Minutes;
-            _mealTimeText = $"{_mealHour:D2}:{_mealMinute:D2}";
-
-            foreach (var entry in model.FoodEntries.OrderBy(f => f.SortOrder))
-                FoodEntries.Add(new FoodEntryViewModel(entry));
-
-            // Start expanded only when the section already has entries
-            _isExpanded = FoodEntries.Count > 0;
 
             ToggleSectionCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
+            
+            IncrementHourCommand = new RelayCommand(() => MealHour = (MealHour + 1) % 24);
+            DecrementHourCommand = new RelayCommand(() => MealHour = (MealHour - 1 + 24) % 24);
+            IncrementMinuteCommand = new RelayCommand(() => MealMinute = (MealMinute + 5) % 60);
+            DecrementMinuteCommand = new RelayCommand(() => MealMinute = (MealMinute - 5 + 60) % 60);
         }
 
         /// <summary>Sum of all food entries' portion weights for this meal.</summary>
