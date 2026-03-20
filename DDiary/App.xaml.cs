@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Hosting;
 using DDiary.Data;
 using DDiary.Helpers;
@@ -20,11 +21,16 @@ namespace DDiary
     public partial class App : System.Windows.Application
     {
         private ServiceProvider? _serviceProvider;
+        private DispatcherQueueController? _dispatcherQueueController;
         private WindowsXamlManager? _xamlManager;
 
         protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // A DispatcherQueue must exist on the thread before WindowsXamlManager or
+            // DesktopWindowXamlSource can be created (required since Windows App SDK 1.6+).
+            _dispatcherQueueController = DispatcherQueueController.CreateOnCurrentThread();
 
             // Inizializza il framework WinUI 3 per il thread corrente (richiesto per XAML Islands).
             _xamlManager = WindowsXamlManager.InitializeForCurrentThread();
@@ -57,6 +63,7 @@ namespace DDiary
         {
             _xamlManager?.Dispose();
             _serviceProvider?.Dispose();
+            _dispatcherQueueController?.ShutdownQueue();
             base.OnExit(e);
         }
 
