@@ -38,7 +38,8 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Hours -->
-                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center"
+                                MouseWheel="HourSpinner_MouseWheel">
                         <Button Content="▲" 
                                 Style="{StaticResource SpinnerButtonStyle}"
                                 Command="{Binding IncrementHourCommand}"
@@ -60,7 +61,8 @@
                                VerticalAlignment="Center"/>
 
                     <!-- Minutes -->
-                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center"
+                                MouseWheel="MinuteSpinner_MouseWheel">
                         <Button Content="▲" 
                                 Style="{StaticResource SpinnerButtonStyle}"
                                 Command="{Binding IncrementMinuteCommand}"

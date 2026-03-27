@@ -187,10 +187,21 @@ namespace DDiary.ViewModels
         }
 
         private bool _isTimePickerOpen;
+        private bool _confirmingTimePicker;
+
         public bool IsTimePickerOpen
         {
             get => _isTimePickerOpen;
-            set => SetProperty(ref _isTimePickerOpen, value);
+            set
+            {
+                // Closing without an explicit Confirm/Cancel (e.g. click outside) → revert
+                if (_isTimePickerOpen && !value && !_confirmingTimePicker)
+                {
+                    MealHour   = _tempMealHour;
+                    MealMinute = _tempMealMinute;
+                }
+                SetProperty(ref _isTimePickerOpen, value);
+            }
         }
 
         private int _tempMealHour;
@@ -236,15 +247,19 @@ namespace DDiary.ViewModels
 
             ConfirmTimePickerCommand = new RelayCommand(() =>
             {
+                _confirmingTimePicker = true;
                 SyncMealTimeFromParts();
                 IsTimePickerOpen = false;
+                _confirmingTimePicker = false;
             });
 
             CancelTimePickerCommand = new RelayCommand(() =>
             {
+                _confirmingTimePicker = true;
                 MealHour = _tempMealHour;
                 MealMinute = _tempMealMinute;
                 IsTimePickerOpen = false;
+                _confirmingTimePicker = false;
             });
         }
 
