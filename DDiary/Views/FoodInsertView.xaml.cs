@@ -30,5 +30,27 @@ namespace DDiary.Views
                 }
             }
         }
+
+        // ── Mouse-wheel support for the time spinner ──────────────────────────────
+
+        private void HourSpinner_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (DataContext is FoodInsertViewModel vm)
+            {
+                if (e.Delta > 0) vm.IncrementHourCommand.Execute(null);
+                else             vm.DecrementHourCommand.Execute(null);
+                e.Handled = true;
+            }
+        }
+
+        private void MinuteSpinner_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (DataContext is FoodInsertViewModel vm)
+            {
+                if (e.Delta > 0) vm.IncrementMinuteCommand.Execute(null);
+                else             vm.DecrementMinuteCommand.Execute(null);
+                e.Handled = true;
+            }
+        }
     }
 }
