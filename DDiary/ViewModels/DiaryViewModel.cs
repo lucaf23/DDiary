@@ -93,6 +93,14 @@ namespace DDiary.ViewModels
 
         public ICommand ToggleSectionCommand { get; }
 
+        public ICommand IncrementHourCommand { get; init; }
+        public ICommand DecrementHourCommand { get; init; }
+        public ICommand IncrementMinuteCommand { get; init; }
+        public ICommand DecrementMinuteCommand { get; init; }
+        public ICommand OpenTimePickerCommand { get; init; }
+        public ICommand ConfirmTimePickerCommand { get; init; }
+        public ICommand CancelTimePickerCommand { get; init; }
+
         public ObservableCollection<FoodEntryViewModel> FoodEntries { get; } = new();
 
         private double _totalCho;
@@ -141,7 +149,6 @@ namespace DDiary.ViewModels
                 value = ((value % 24) + 24) % 24;
                 SetProperty(ref _mealHour, value);
                 OnPropertyChanged(nameof(MealHourDisplay));
-                SyncMealTimeFromParts();
             }
         }
 
@@ -154,7 +161,6 @@ namespace DDiary.ViewModels
                 value = ((value % 60) + 60) % 60;
                 SetProperty(ref _mealMinute, value);
                 OnPropertyChanged(nameof(MealMinuteDisplay));
-                SyncMealTimeFromParts();
             }
         }
 
@@ -175,11 +181,20 @@ namespace DDiary.ViewModels
                 }
                 else
                 {
-                    // Revert to the last valid value so the TextBox shows the correct time
                     OnPropertyChanged(nameof(MealTimeText));
                 }
             }
         }
+
+        private bool _isTimePickerOpen;
+        public bool IsTimePickerOpen
+        {
+            get => _isTimePickerOpen;
+            set => SetProperty(ref _isTimePickerOpen, value);
+        }
+
+        private int _tempMealHour;
+        private int _tempMealMinute;
 
         public TimeSpan MealTime => _model.MealTime;
 
@@ -205,13 +220,32 @@ namespace DDiary.ViewModels
             _mealMinute = model.MealTime.Minutes;
             _mealTimeText = $"{_mealHour:D2}:{_mealMinute:D2}";
 
-            foreach (var entry in model.FoodEntries.OrderBy(f => f.SortOrder))
-                FoodEntries.Add(new FoodEntryViewModel(entry));
-
-            // Start expanded only when the section already has entries
-            _isExpanded = FoodEntries.Count > 0;
-
             ToggleSectionCommand = new RelayCommand(() => IsExpanded = !IsExpanded);
+
+            IncrementHourCommand = new RelayCommand(() => MealHour = (MealHour + 1) % 24);
+            DecrementHourCommand = new RelayCommand(() => MealHour = (MealHour - 1 + 24) % 24);
+            IncrementMinuteCommand = new RelayCommand(() => MealMinute = (MealMinute + 5) % 60);
+            DecrementMinuteCommand = new RelayCommand(() => MealMinute = (MealMinute - 5 + 60) % 60);
+
+            OpenTimePickerCommand = new RelayCommand(() =>
+            {
+                _tempMealHour = _mealHour;
+                _tempMealMinute = _mealMinute;
+                IsTimePickerOpen = true;
+            });
+
+            ConfirmTimePickerCommand = new RelayCommand(() =>
+            {
+                SyncMealTimeFromParts();
+                IsTimePickerOpen = false;
+            });
+
+            CancelTimePickerCommand = new RelayCommand(() =>
+            {
+                MealHour = _tempMealHour;
+                MealMinute = _tempMealMinute;
+                IsTimePickerOpen = false;
+            });
         }
 
         /// <summary>Sum of all food entries' portion weights for this meal.</summary>

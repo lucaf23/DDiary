@@ -1,4 +1,4 @@
-<UserControl x:Class="DDiary.Views.FoodInsertView"
+    <UserControl x:Class="DDiary.Views.FoodInsertView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -19,14 +19,77 @@
                    FontSize="18"
                    Margin="0,0,0,16"/>
 
-        <!-- Tipo pasto row -->
-        <StackPanel Margin="0,0,0,12">
-            <TextBlock Style="{StaticResource LabelStyle}" Text="Tipo Pasto"/>
-            <ComboBox Style="{StaticResource ModernComboBoxStyle}"
-                      ItemsSource="{Binding MealTypeOptions}"
-                      DisplayMemberPath="Label"
-                      SelectedItem="{Binding SelectedMealTypeOption}"/>
-        </StackPanel>
+        <!-- Time row -->
+        <Grid Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Time Picker with Spinners -->
+            <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                <TextBlock Style="{StaticResource LabelStyle}" Text="Ora pasto *"/>
+
+                <Grid Margin="0,2,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Hours -->
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                        <Button Content="▲" 
+                                Style="{StaticResource SpinnerButtonStyle}"
+                                Command="{Binding IncrementHourCommand}"
+                                Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding MealHourDisplay}" 
+                                   FontSize="24" FontWeight="Bold"
+                                   TextAlignment="Center"
+                                   Padding="16,8"/>
+                        <Button Content="▼" 
+                                Style="{StaticResource SpinnerButtonStyle}"
+                                Command="{Binding DecrementHourCommand}"
+                                Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </StackPanel>
+
+                    <!-- Divider -->
+                    <TextBlock Grid.Column="1" Text=":" 
+                               FontSize="24" FontWeight="Bold"
+                               Padding="8,0"
+                               VerticalAlignment="Center"/>
+
+                    <!-- Minutes -->
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                        <Button Content="▲" 
+                                Style="{StaticResource SpinnerButtonStyle}"
+                                Command="{Binding IncrementMinuteCommand}"
+                                Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock Text="{Binding MealMinuteDisplay}" 
+                                   FontSize="24" FontWeight="Bold"
+                                   TextAlignment="Center"
+                                   Padding="16,8"/>
+                        <Button Content="▼" 
+                                Style="{StaticResource SpinnerButtonStyle}"
+                                Command="{Binding DecrementMinuteCommand}"
+                                Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Text="{Binding TimeError}"
+                           Style="{StaticResource ErrorTextStyle}"
+                           Visibility="{Binding TimeError, Converter={StaticResource StrVis}}"/>
+            </StackPanel>
+
+            <!-- Meal Type -->
+            <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                <TextBlock Style="{StaticResource LabelStyle}" Text="Tipo Pasto"/>
+                <ComboBox Style="{StaticResource ModernComboBoxStyle}"
+                          ItemsSource="{Binding MealTypeOptions}"
+                          DisplayMemberPath="Label"
+                          SelectedItem="{Binding SelectedMealTypeOption}"/>
+            </StackPanel>
+        </Grid>
 
         <!-- Food name -->
         <StackPanel Margin="0,0,0,12">

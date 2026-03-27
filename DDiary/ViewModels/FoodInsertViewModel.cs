@@ -179,9 +179,14 @@ namespace DDiary.ViewModels
             !string.IsNullOrWhiteSpace(FoodName) &&
             TimeSpan.TryParse(MealTimeText, out _);
 
-        public ICommand SaveCommand { get; }
-        public ICommand SaveAndAddCommand { get; }
-        public ICommand CancelCommand { get; }
+        public ICommand SaveCommand { get; init; }
+        public ICommand SaveAndAddCommand { get; init; }
+        public ICommand CancelCommand { get; init; }
+
+        public ICommand IncrementHourCommand { get; init; }
+        public ICommand DecrementHourCommand { get; init; }
+        public ICommand IncrementMinuteCommand { get; init; }
+        public ICommand DecrementMinuteCommand { get; init; }
 
         public event Action? RequestClose;
         public event Action? RequestSaveAndAdd;
@@ -194,6 +199,11 @@ namespace DDiary.ViewModels
             SaveCommand = new RelayCommand(async () => await SaveAsync(), () => IsValid);
             SaveAndAddCommand = new RelayCommand(async () => await SaveAndAddAsync(), () => IsValid);
             CancelCommand = new RelayCommand(() => RequestClose?.Invoke());
+            
+            IncrementHourCommand = new RelayCommand(() => MealHour = (MealHour + 1) % 24);
+            DecrementHourCommand = new RelayCommand(() => MealHour = (MealHour - 1 + 24) % 24);
+            IncrementMinuteCommand = new RelayCommand(() => MealMinute = (MealMinute + 5) % 60);
+            DecrementMinuteCommand = new RelayCommand(() => MealMinute = (MealMinute - 5 + 60) % 60);
 
             UpdateAutoMealType();
         }

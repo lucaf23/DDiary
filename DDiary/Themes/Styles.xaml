@@ -453,4 +453,7 @@
         <Setter Property="Margin" Value="0,4"/>
     </Style>
 
+    <!-- Shadow effect for popups -->
+    <DropShadowEffect x:Key="ShadowEffect" BlurRadius="12" ShadowDepth="3" Opacity="0.3" Color="#000000" Direction="270"/>
+
 </ResourceDictionary>

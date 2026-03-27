@@ -10,6 +10,18 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVis"/>
 
+        <!-- Time Picker Box Style (matches ModernTextBoxStyle) -->
+        <Style x:Key="TimePickerBoxStyle" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
         <!-- Classic Table DataGrid style -->
         <Style x:Key="ClassicDataGridStyle" TargetType="DataGrid">
             <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
@@ -270,9 +282,119 @@
                                         <!-- Ora pasto -->
                                         <StackPanel Grid.Column="3" Margin="4,0">
                                             <TextBlock Style="{StaticResource LabelStyle}" Text="Ora pasto"/>
-                                            <TextBox Style="{StaticResource TimePickerStyle}"
-                                                     Text="{Binding MealTimeText, UpdateSourceTrigger=LostFocus}"
-                                                     Margin="0,2,0,0"/>
+
+                                            <Grid>
+                                                <Border x:Name="TimePickerBox"
+                                                        Margin="0,0,0,0"
+                                                        Style="{StaticResource TimePickerBoxStyle}">
+                                                    <Border.InputBindings>
+                                                        <MouseBinding MouseAction="LeftClick" 
+                                                                      Command="{Binding OpenTimePickerCommand}"/>
+                                                    </Border.InputBindings>
+                                                    <TextBlock Text="{Binding MealTimeText}"
+                                                               FontSize="14"
+                                                               TextAlignment="Center"
+                                                               Foreground="{DynamicResource AccentBrush}"
+                                                               VerticalAlignment="Center"/>
+                                                </Border>
+
+                                                <!-- Popup time picker -->
+                                                <Popup x:Name="TimePickerPopup"
+                                                       IsOpen="{Binding IsTimePickerOpen, Mode=TwoWay}"
+                                                       Placement="Center"
+                                                       StaysOpen="True"
+                                                       AllowsTransparency="True"
+                                                       PopupAnimation="Fade"
+                                                       Margin="0">
+                                                    <Border Background="{DynamicResource SurfaceBrush}"
+                                                            BorderBrush="{DynamicResource BorderBrush}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="8"
+                                                            Padding="16"
+                                                            Effect="{StaticResource ShadowEffect}">
+                                                        <Grid Width="240">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                            </Grid.RowDefinitions>
+
+                                                            <!-- Title -->
+                                                            <TextBlock Grid.Row="0"
+                                                                       Text="Seleziona ora"
+                                                                       FontSize="14" FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                                       Margin="0,0,0,12"/>
+
+                                                            <!-- Time Spinner -->
+                                                            <Grid Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,16">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <!-- Hours -->
+                                                                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                                    <Button Content="▲" 
+                                                                            Style="{StaticResource SpinnerButtonStyle}"
+                                                                            Command="{Binding IncrementHourCommand}"
+                                                                            Margin="0,0,0,4"/>
+                                                                    <TextBlock Text="{Binding MealHourDisplay}" 
+                                                                               FontSize="28" FontWeight="Bold"
+                                                                               TextAlignment="Center"
+                                                                               Foreground="{DynamicResource AccentBrush}"
+                                                                               Padding="12,8"/>
+                                                                    <Button Content="▼" 
+                                                                            Style="{StaticResource SpinnerButtonStyle}"
+                                                                            Command="{Binding DecrementHourCommand}"
+                                                                            Margin="0,4,0,0"/>
+                                                                </StackPanel>
+
+                                                                <!-- Divider -->
+                                                                <TextBlock Grid.Column="1" Text=":" 
+                                                                           FontSize="28" FontWeight="Bold"
+                                                                           Padding="8,0"
+                                                                           Foreground="{DynamicResource AccentBrush}"
+                                                                           VerticalAlignment="Center"/>
+
+                                                                <!-- Minutes -->
+                                                                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                                    <Button Content="▲" 
+                                                                            Style="{StaticResource SpinnerButtonStyle}"
+                                                                            Command="{Binding IncrementMinuteCommand}"
+                                                                            Margin="0,0,0,4"/>
+                                                                    <TextBlock Text="{Binding MealMinuteDisplay}" 
+                                                                               FontSize="28" FontWeight="Bold"
+                                                                               TextAlignment="Center"
+                                                                               Foreground="{DynamicResource AccentBrush}"
+                                                                               Padding="12,8"/>
+                                                                    <Button Content="▼" 
+                                                                            Style="{StaticResource SpinnerButtonStyle}"
+                                                                            Command="{Binding DecrementMinuteCommand}"
+                                                                            Margin="0,4,0,0"/>
+                                                                </StackPanel>
+                                                            </Grid>
+
+                                                            <!-- Buttons -->
+                                                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                                                                <Button Style="{StaticResource SecondaryButtonStyle}"
+                                                                        Content="Annulla"
+                                                                        Command="{Binding CancelTimePickerCommand}"
+                                                                        Padding="12,6"
+                                                                        FontSize="12"
+                                                                        Margin="0,0,8,0"/>
+
+                                                                <Button Style="{StaticResource PrimaryButtonStyle}"
+                                                                        Content="OK"
+                                                                        Command="{Binding ConfirmTimePickerCommand}"
+                                                                        Padding="12,6"
+                                                                        FontSize="12"/>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+                                                </Popup>
+                                            </Grid>
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="4" Margin="4,0,0,0">
