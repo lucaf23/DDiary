@@ -16,6 +16,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -101,16 +102,56 @@
             </StackPanel>
         </Border>
 
-        <!-- Go to Today button -->
-        <Button Grid.Row="1"
-                Style="{StaticResource PrimaryButtonStyle}"
-                Content="📅 Vai ad oggi"
-                Command="{Binding GoToTodayCommand}"
-                Margin="12,8"
-                HorizontalAlignment="Stretch"/>
+        <!-- ── Apri / Crea diario per data ── -->
+        <Border Grid.Row="1"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="12,10">
+            <StackPanel>
+                <TextBlock Text="📝 Apri o crea diario"
+                           Style="{StaticResource LabelStyle}"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,6"/>
+
+                <!-- Date picker -->
+                <DatePicker SelectedDate="{Binding NewDiaryDate, Mode=TwoWay}"
+                            Margin="0,0,0,6"
+                            FontFamily="Segoe UI"
+                            FontSize="13"/>
+
+                <!-- Quick buttons row -->
+                <Grid Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Content="📅 Oggi"
+                            Command="{Binding GoToTodayCommand}"
+                            Margin="0,0,3,0"
+                            FontSize="12"/>
+                    <Button Grid.Column="1"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Content="⬅ Ieri"
+                            Command="{Binding SetYesterdayCommand}"
+                            Margin="3,0,0,0"
+                            FontSize="12"/>
+                </Grid>
+
+                <!-- Open / Create button -->
+                <Button Style="{StaticResource PrimaryButtonStyle}"
+                        Content="Apri / Crea diario"
+                        Command="{Binding OpenOrCreateDiaryCommand}"
+                        HorizontalAlignment="Stretch"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Diary list header row (empty, kept for grid spacing) -->
+        <Border Grid.Row="2" Height="0"/>
 
         <!-- Diary list -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <!-- Empty state -->
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                         Visibility="{Binding IsEmpty, Converter={StaticResource BoolVis}}">

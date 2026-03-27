@@ -296,9 +296,9 @@
                                                                VerticalAlignment="Center"/>
                                                 </Border>
 
-                                                <!-- Popup time picker -->
+                                                <!-- Popup time picker (Modern view only) -->
                                                 <Popup x:Name="TimePickerPopup"
-                                                       IsOpen="{Binding IsTimePickerOpen, Mode=TwoWay}"
+                                                       IsOpen="{Binding IsTimePickerOpenModern, Mode=TwoWay}"
                                                        Placement="Center"
                                                        StaysOpen="False"
                                                        AllowsTransparency="True"
@@ -686,8 +686,8 @@
                                                     </StackPanel>
                                                 </Border>
 
-                                                <!-- Popup time picker -->
-                                                <Popup IsOpen="{Binding IsTimePickerOpen, Mode=TwoWay}"
+                                                <!-- Popup time picker (Classic view only) -->
+                                                <Popup IsOpen="{Binding IsTimePickerOpenClassic, Mode=TwoWay}"
                                                        Placement="Bottom"
                                                        StaysOpen="False"
                                                        AllowsTransparency="True"
