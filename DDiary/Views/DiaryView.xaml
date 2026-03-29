@@ -689,7 +689,7 @@
                                                 <!-- Popup time picker (Classic view only) -->
                                                 <Popup IsOpen="{Binding IsTimePickerOpenClassic, Mode=TwoWay}"
                                                        Placement="Bottom"
-                                                       StaysOpen="False"
+                                                       StaysOpen="True"
                                                        AllowsTransparency="True"
                                                        PopupAnimation="Fade">
                                                     <Border Background="{DynamicResource SurfaceBrush}"
