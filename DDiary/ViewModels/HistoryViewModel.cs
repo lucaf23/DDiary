@@ -63,15 +63,27 @@ namespace DDiary.ViewModels
         public ICommand RefreshCommand { get; }
         public ICommand GoToTodayCommand { get; }
         public ICommand ClearFiltersCommand { get; }
+        public ICommand OpenOrCreateDiaryCommand { get; }
+        public ICommand SetYesterdayCommand { get; }
 
         public event Action<DateTime>? DiarySelected;
+        public event Action<DateTime>? OpenOrCreateDiaryRequested;
+
+        private DateTime _newDiaryDate = DateTime.Today;
+        public DateTime NewDiaryDate
+        {
+            get => _newDiaryDate;
+            set => SetProperty(ref _newDiaryDate, value);
+        }
 
         public HistoryViewModel(IDiaryService diaryService)
         {
             _diaryService = diaryService;
             RefreshCommand = new RelayCommand(async () => await LoadAsync(0));
-            GoToTodayCommand = new RelayCommand(() => DiarySelected?.Invoke(DateTime.Today));
+            GoToTodayCommand = new RelayCommand(() => { NewDiaryDate = DateTime.Today; OpenOrCreateDiaryRequested?.Invoke(DateTime.Today); });
             ClearFiltersCommand = new RelayCommand(ClearFilters);
+            OpenOrCreateDiaryCommand = new RelayCommand(() => OpenOrCreateDiaryRequested?.Invoke(NewDiaryDate));
+            SetYesterdayCommand = new RelayCommand(() => NewDiaryDate = DateTime.Today.AddDays(-1));
         }
 
         private int _currentProfileId;

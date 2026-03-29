@@ -13,6 +13,7 @@ namespace DDiary.Services
     {
         Task<DailyDiary?> GetDiaryByDateAsync(int profileId, DateTime date);
         Task<DailyDiary> GetOrCreateTodayAsync(int profileId);
+        Task<DailyDiary> GetOrCreateDiaryForDateAsync(int profileId, DateTime date);
         Task<IEnumerable<DailyDiary>> GetDiariesAsync(int profileId);
         Task<IEnumerable<DailyDiary>> SearchDiariesAsync(int profileId, string? query, int? year, int? month);
         Task<DailyDiary> SaveDiaryAsync(DailyDiary diary);
@@ -37,6 +38,25 @@ namespace DDiary.Services
 
         public Task<DailyDiary> GetOrCreateTodayAsync(int profileId)
             => _diaryRepo.GetOrCreateTodayAsync(profileId);
+
+        public async Task<DailyDiary> GetOrCreateDiaryForDateAsync(int profileId, DateTime date)
+        {
+            var diary = await _diaryRepo.GetByDateAsync(profileId, date.Date);
+            if (diary == null)
+            {
+                diary = new DailyDiary
+                {
+                    UserProfileId = profileId,
+                    Date = date.Date,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+                foreach (MealType mt in Enum.GetValues(typeof(MealType)))
+                    diary.MealSections.Add(new MealSection { MealType = mt });
+                diary = await _diaryRepo.AddAsync(diary);
+            }
+            return diary;
+        }
 
         public Task<IEnumerable<DailyDiary>> GetDiariesAsync(int profileId)
             => _diaryRepo.GetByProfileAsync(profileId);

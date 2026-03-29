@@ -188,6 +188,18 @@ namespace DDiary.ViewModels
 
         private bool _isTimePickerOpen;
         private bool _confirmingTimePicker;
+        private bool _viewIsClassicMode;
+
+        public bool ViewIsClassicMode
+        {
+            get => _viewIsClassicMode;
+            set
+            {
+                SetProperty(ref _viewIsClassicMode, value);
+                OnPropertyChanged(nameof(IsTimePickerOpenModern));
+                OnPropertyChanged(nameof(IsTimePickerOpenClassic));
+            }
+        }
 
         public bool IsTimePickerOpen
         {
@@ -201,7 +213,23 @@ namespace DDiary.ViewModels
                     MealMinute = _tempMealMinute;
                 }
                 SetProperty(ref _isTimePickerOpen, value);
+                OnPropertyChanged(nameof(IsTimePickerOpenModern));
+                OnPropertyChanged(nameof(IsTimePickerOpenClassic));
             }
+        }
+
+        /// <summary>Used by the Modern-view popup to ensure only one popup opens at a time.</summary>
+        public bool IsTimePickerOpenModern
+        {
+            get => _isTimePickerOpen && !_viewIsClassicMode;
+            set { if (!_viewIsClassicMode) IsTimePickerOpen = value; }
+        }
+
+        /// <summary>Used by the Classic-view popup to ensure only one popup opens at a time.</summary>
+        public bool IsTimePickerOpenClassic
+        {
+            get => _isTimePickerOpen && _viewIsClassicMode;
+            set { if (_viewIsClassicMode) IsTimePickerOpen = value; }
         }
 
         private int _tempMealHour;
@@ -403,16 +431,24 @@ namespace DDiary.ViewModels
                 foreach (var section in diary.MealSections.OrderBy(s => s.MealType))
                     MealSections.Add(new MealSectionViewModel(section));
 
-                // Ensure all meal types are present
+                // Ensure all meal types are present, initialising MealTime from settings for new sections
+                var timeRanges = _settingsService.Settings.MealTimeRanges;
                 foreach (MealType mt in Enum.GetValues(typeof(MealType)))
                 {
                     if (!MealSections.Any(s => s.MealType == mt))
                     {
                         var newSection = new MealSection { MealType = mt, DailyDiaryId = diary.Id };
+                        var range = timeRanges.FirstOrDefault(r => r.MealType == mt);
+                        if (range != null && TimeSpan.TryParse(range.Start, out var startTime))
+                            newSection.MealTime = startTime;
                         diary.MealSections.Add(newSection);
                         MealSections.Add(new MealSectionViewModel(newSection));
                     }
                 }
+
+                // Sync view-mode flag so each section's popup bindings are scoped correctly
+                foreach (var s in MealSections)
+                    s.ViewIsClassicMode = IsClassicMode;
             }
             finally
             {
@@ -455,6 +491,8 @@ namespace DDiary.ViewModels
             IsClassicMode = !IsClassicMode;
             _settingsService.Settings.DiaryViewMode = IsClassicMode ? "Classic" : "Modern";
             await _settingsService.SaveAsync();
+            foreach (var s in MealSections)
+                s.ViewIsClassicMode = IsClassicMode;
         }
 
         private async Task AddInlineFoodEntryAsync(MealType mealType)

@@ -142,6 +142,7 @@ namespace DDiary.ViewModels
 
             // Wire events
             HistoryVM.DiarySelected += date => _ = OpenDiaryByDateAsync(date);
+            HistoryVM.OpenOrCreateDiaryRequested += date => _ = OpenOrCreateDiaryForDateAsync(date);
             FoodInsertVM.RequestClose += CloseInsertPanel;
             FoodInsertVM.RequestSaveAndAdd += () => { /* keep panel open, reset form */ };
             ProfileVM.ProfileActivated += async p => await OnProfileActivated(p);
@@ -224,6 +225,29 @@ namespace DDiary.ViewModels
             CurrentPage = "Today";
             if (_activeProfile != null)
                 await DiaryVM.LoadAsync(_activeProfile.Id, date);
+        }
+
+        private async Task OpenOrCreateDiaryForDateAsync(DateTime date)
+        {
+            if (_activeProfile == null) return;
+            IsBusy = true;
+            try
+            {
+                IsSidebarOpen = false;
+                await _diaryService.GetOrCreateDiaryForDateAsync(_activeProfile.Id, date);
+                CurrentPage = "Today";
+                await DiaryVM.LoadAsync(_activeProfile.Id, date);
+                await HistoryVM.LoadAsync(_activeProfile.Id);
+                StatusMessage = $"Diario del {date:dd/MM/yyyy} aperto.";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Errore: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private async Task OnProfileActivated(UserProfile profile)
