@@ -428,11 +428,20 @@ namespace DDiary.ViewModels
                 IsClassicMode = _settingsService.Settings.DiaryViewMode == "Classic";
 
                 MealSections.Clear();
+                var timeRanges = _settingsService.Settings.MealTimeRanges;
                 foreach (var section in diary.MealSections.OrderBy(s => s.MealType))
+                {
+                    // Apply default time from settings when MealTime has never been set (00:00)
+                    if (section.MealTime == TimeSpan.Zero)
+                    {
+                        var defaultRange = timeRanges.FirstOrDefault(r => r.MealType == section.MealType);
+                        if (defaultRange != null && TimeSpan.TryParse(defaultRange.Start, out var defaultStart))
+                            section.MealTime = defaultStart;
+                    }
                     MealSections.Add(new MealSectionViewModel(section));
+                }
 
                 // Ensure all meal types are present, initialising MealTime from settings for new sections
-                var timeRanges = _settingsService.Settings.MealTimeRanges;
                 foreach (MealType mt in Enum.GetValues(typeof(MealType)))
                 {
                     if (!MealSections.Any(s => s.MealType == mt))

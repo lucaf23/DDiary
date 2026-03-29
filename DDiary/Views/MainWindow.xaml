@@ -203,6 +203,57 @@
                                    Visibility="{Binding DataContext.ShowProfile,
                                                     RelativeSource={RelativeSource AncestorType=Window},
                                                     Converter={StaticResource BoolVis}}"/>
+
+                <!-- ── Page-transition loading overlay ── -->
+                <Border Background="{DynamicResource OverlayBrush}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Opacity" Value="0"/>
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                    <Setter Property="IsHitTestVisible" Value="True"/>
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                 From="0" To="1"
+                                                                 Duration="0:0:0.25">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <QuadraticEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                 To="0"
+                                                                 Duration="0:0:0.3">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <QuadraticEase EasingMode="EaseIn"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="220" Height="8"
+                                     Margin="0,0,0,14"/>
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   HorizontalAlignment="Center"
+                                   Foreground="White"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
             </Grid>
         </Grid>
 

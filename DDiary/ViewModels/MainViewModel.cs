@@ -152,6 +152,7 @@ namespace DDiary.ViewModels
 
         public async Task InitializeAsync()
         {
+            StatusMessage = "Avvio in corso...";
             IsBusy = true;
             try
             {
@@ -230,6 +231,9 @@ namespace DDiary.ViewModels
         private async Task OpenOrCreateDiaryForDateAsync(DateTime date)
         {
             if (_activeProfile == null) return;
+            StatusMessage = date.Date == DateTime.Today.Date
+                ? "Apertura diario di oggi..."
+                : $"Apertura diario del {date:dd/MM/yyyy}...";
             IsBusy = true;
             try
             {
