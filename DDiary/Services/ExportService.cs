@@ -79,7 +79,7 @@ namespace DDiary.Services
             var bmp = RenderToBitmap(element);
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(bmp));
-            using var stream = File.OpenWrite(path);
+            using var stream = File.Create(path);
             encoder.Save(stream);
         }
 
@@ -249,7 +249,8 @@ namespace DDiary.Services
         private static string BuildFileName(DailyDiary diary, UserProfile profile, string extension)
         {
             var safeName = string.Concat(profile.DisplayName.Split(Path.GetInvalidFileNameChars()));
-            return $"DDiary_{diary.Date:yyyy-MM-dd}_{safeName}.{extension}";
+            var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
+            return $"DDiary_{diary.Date:yyyy-MM-dd}_{safeName}_{uniqueId}.{extension}";
         }
 
         private static string GetExportFolder(string? folder, UserProfile profile)
