@@ -89,10 +89,23 @@ namespace DDiary.Services
             element.Arrange(new Rect(element.DesiredSize));
             element.UpdateLayout();
 
+            var width = (int)element.ActualWidth;
+            var height = (int)element.ActualHeight;
+
+            // Se le dimensioni sono 0, tentare di usare DesiredSize
+            if (width <= 0)
+                width = (int)element.DesiredSize.Width;
+            if (height <= 0)
+                height = (int)element.DesiredSize.Height;
+
+            // Se ancora 0, usare dimensioni minime ragionevoli
+            if (width <= 0)
+                width = 800;
+            if (height <= 0)
+                height = 600;
+
             var dpi = 96.0;
-            var renderBitmap = new RenderTargetBitmap(
-                (int)element.ActualWidth, (int)element.ActualHeight,
-                dpi, dpi, PixelFormats.Pbgra32);
+            var renderBitmap = new RenderTargetBitmap(width, height, dpi, dpi, PixelFormats.Pbgra32);
             renderBitmap.Render(element);
             return renderBitmap;
         }
