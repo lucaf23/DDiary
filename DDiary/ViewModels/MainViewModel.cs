@@ -333,7 +333,23 @@ namespace DDiary.ViewModels
                 if (element == null || _activeProfile == null) return;
                 var model = DiaryVM.GetModel();
                 if (model == null) return;
-                var path = await _exportService.ExportAsPngAsync(element, model, _activeProfile);
+
+                // Save sidebar state and close it for better screenshot centering
+                var wasSidebarOpen = IsSidebarOpen;
+                IsSidebarOpen = false;
+                await Task.Delay(100); // Allow sidebar to close and layout to update
+
+                // Expand all sections, render full-height screenshot, then restore states
+                var previousStates = DiaryVM.ExpandAllSections();
+                await Task.Delay(250); // Allow UI layout to fully update
+
+                var path = await _exportService.ExportAsPngFullHeightAsync(element, model, _activeProfile);
+
+                DiaryVM.RestoreSectionStates(previousStates);
+
+                // Restore sidebar state
+                IsSidebarOpen = wasSidebarOpen;
+
                 StatusMessage = $"PNG esportato: {path}";
             }
             catch (Exception ex)

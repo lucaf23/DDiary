@@ -524,5 +524,27 @@ namespace DDiary.ViewModels
         }
 
         public DailyDiary? GetModel() => _model;
+
+        /// <summary>Expands all meal sections and returns their previous states for restoration.</summary>
+        public Dictionary<MealType, bool> ExpandAllSections()
+        {
+            var previousStates = new Dictionary<MealType, bool>();
+            foreach (var section in MealSections)
+            {
+                previousStates[section.MealType] = section.IsExpanded;
+                section.IsExpanded = true;
+            }
+            return previousStates;
+        }
+
+        /// <summary>Restores meal sections to their previous expanded/collapsed states.</summary>
+        public void RestoreSectionStates(Dictionary<MealType, bool> previousStates)
+        {
+            foreach (var section in MealSections)
+            {
+                if (previousStates.TryGetValue(section.MealType, out var wasExpanded))
+                    section.IsExpanded = wasExpanded;
+            }
+        }
     }
 }

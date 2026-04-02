@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,7 @@ namespace DDiary.Services
     public interface IExportService
     {
         Task<string> ExportAsPngAsync(FrameworkElement element, DailyDiary diary, UserProfile profile, string? folder = null);
+        Task<string> ExportAsPngFullHeightAsync(FrameworkElement element, DailyDiary diary, UserProfile profile, string? folder = null);
         Task<string> ExportAsPdfAsync(DailyDiary diary, UserProfile profile, string? folder = null);
         void CopyToClipboard(FrameworkElement element);
     }
@@ -40,6 +42,22 @@ namespace DDiary.Services
             await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 RenderElementToPng(element, fullPath);
+            });
+
+            return fullPath;
+        }
+
+        public async Task<string> ExportAsPngFullHeightAsync(FrameworkElement element, DailyDiary diary, UserProfile profile, string? folder = null)
+        {
+            var exportFolder = GetExportFolder(folder, profile);
+            var fileName = BuildFileName(diary, profile, "png");
+            var fullPath = Path.Combine(exportFolder, fileName);
+
+            Directory.CreateDirectory(exportFolder);
+
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                RenderElementToPngFullHeight(element, fullPath);
             });
 
             return fullPath;
@@ -83,14 +101,150 @@ namespace DDiary.Services
             encoder.Save(stream);
         }
 
-        private static BitmapSource RenderToBitmap(FrameworkElement element)
+        private static void RenderElementToPngFullHeight(FrameworkElement element, string path)
+        {
+            try
+            {
+                var scrollViewers = new System.Collections.Generic.List<ScrollViewer>();
+                CollectScrollViewers(element, scrollViewers);
+
+                var mainSv = scrollViewers
+                    .FirstOrDefault(sv => sv.Parent is Grid && Grid.GetRow(sv) == 1 && sv.Visibility == Visibility.Visible)
+                    ?? scrollViewers.FirstOrDefault(sv => sv.Parent is Grid && Grid.GetRow(sv) == 1)
+                    ?? scrollViewers.FirstOrDefault();
+
+                // Prefer rendering only the visible scroll content at full height.
+                if (mainSv?.Content is FrameworkElement content)
+                {
+                    var width = mainSv.ActualWidth > 0 ? mainSv.ActualWidth : (element.ActualWidth > 0 ? element.ActualWidth : 800);
+
+                    // Measure content with infinite height to get all sections.
+                    content.Measure(new System.Windows.Size(width, double.PositiveInfinity));
+                    var totalHeight = content.DesiredSize.Height;
+                    if (totalHeight <= 0)
+                        totalHeight = mainSv.ExtentHeight;
+                    if (totalHeight <= 0)
+                        totalHeight = content.ActualHeight;
+                    if (totalHeight <= 0)
+                        totalHeight = 600;
+
+                    content.Arrange(new Rect(0, 0, width, totalHeight));
+                    content.UpdateLayout();
+
+                    DisableClippingRecursive(content);
+                    content.UpdateLayout();
+
+                    var finalWidth = (int)Math.Min(width, 4096);
+                    var finalHeight = (int)Math.Min(totalHeight, 16384);
+                    if (finalHeight <= 0) finalHeight = 600;
+
+                    var dpi = 96.0;
+                    var renderBitmap = new RenderTargetBitmap(finalWidth, finalHeight, dpi, dpi, PixelFormats.Pbgra32);
+                    renderBitmap.Render(content);
+
+                    var encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+                    using var stream = File.Create(path);
+                    encoder.Save(stream);
+                    return;
+                }
+
+                // Fallback to default full element render
+                var bmp = RenderToBitmap(element);
+                var fallbackEncoder = new PngBitmapEncoder();
+                fallbackEncoder.Frames.Add(BitmapFrame.Create(bmp));
+                using var fallbackStream = File.Create(path);
+                fallbackEncoder.Save(fallbackStream);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"RenderElementToPngFullHeight error: {ex}");
+                throw;
+            }
+        }
+
+        private static void CollectScrollViewers(DependencyObject? obj, System.Collections.Generic.ICollection<ScrollViewer> result)
+        {
+            if (obj == null) return;
+
+            if (obj is ScrollViewer sv)
+                result.Add(sv);
+
+            int count = VisualTreeHelper.GetChildrenCount(obj);
+            for (int i = 0; i < count; i++)
+                CollectScrollViewers(VisualTreeHelper.GetChild(obj, i), result);
+        }
+
+        private static ScrollViewer? FindScrollViewerRecursive(DependencyObject? obj)
+        {
+            if (obj == null) return null;
+            if (obj is ScrollViewer sv) return sv;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var result = FindScrollViewerRecursive(VisualTreeHelper.GetChild(obj, i));
+                if (result != null) return result;
+            }
+            return null;
+        }
+
+        private static void DisableClippingRecursive(DependencyObject obj)
+        {
+            if (obj is ScrollViewer sv)
+            {
+                sv.ClipToBounds = false;
+                sv.MaxHeight = double.PositiveInfinity;
+                sv.Height = double.NaN;
+                sv.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            }
+            else if (obj is FrameworkElement fe)
+            {
+                // Remove all height constraints
+                fe.MaxHeight = double.PositiveInfinity;
+                if (!double.IsNaN(fe.Height) && fe.Height > 0)
+                    fe.Height = double.NaN;
+
+                // Disable ClipToBounds where applicable
+                try
+                {
+                    var clipProp = fe.GetType().GetProperty("ClipToBounds");
+                    if (clipProp?.CanWrite == true)
+                        clipProp.SetValue(fe, false);
+                }
+                catch { }
+            }
+
+            // Recursively process all children in the visual tree
+            int childCount = VisualTreeHelper.GetChildrenCount(obj);
+            for (int i = 0; i < childCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                DisableClippingRecursive(child);
+            }
+        }
+
+        private static void ResetScrollViewers(DependencyObject obj)
+        {
+            if (obj is ScrollViewer sv)
+            {
+                sv.ScrollToHome();
+            }
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                ResetScrollViewers(child);
+            }
+        }
+
+        private static BitmapSource RenderToBitmap(FrameworkElement element, int? customHeight = null)
         {
             element.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
             element.Arrange(new Rect(element.DesiredSize));
             element.UpdateLayout();
 
             var width = (int)element.ActualWidth;
-            var height = (int)element.ActualHeight;
+            var height = customHeight ?? (int)element.ActualHeight;
 
             // Se le dimensioni sono 0, tentare di usare DesiredSize
             if (width <= 0)
@@ -103,6 +257,10 @@ namespace DDiary.Services
                 width = 800;
             if (height <= 0)
                 height = 600;
+
+            // Ensure reasonable limits to avoid memory issues
+            width = Math.Min(width, 4096);
+            height = Math.Min(height, 8192);
 
             var dpi = 96.0;
             var renderBitmap = new RenderTargetBitmap(width, height, dpi, dpi, PixelFormats.Pbgra32);
